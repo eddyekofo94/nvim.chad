@@ -1,7 +1,7 @@
 -- n, v, i, t = mode names
 
 local M = {}
-local Util = require("core.utils")
+local Util = require "core.utils"
 
 M.general = {
   i = {
@@ -17,14 +17,18 @@ M.general = {
   },
 
   n = {
-        ["<leader>oo"] = {
-          ':<C-u>call append(line("."),   repeat([""], v:count1))<CR>',
-          "inset line",
-      },
-      ["<leader>OO"] = {
-          ':<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>',
-          "inset line",
-      },
+    ["<leader>oo"] = {
+      ':<C-u>call append(line("."),   repeat([""], v:count1))<CR>',
+      "inset line",
+    },
+    ["OO"] = {
+      ':<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>',
+      "inset line",
+    },
+    ["<S-x>"] = {
+      [[<Cmd>bdelete!<CR>]],
+      "Delete buffer",
+    },
     ["<Esc>"] = { "<cmd> noh <CR>", "Clear highlights" },
     -- switch between windows
     ["<C-h>"] = { "<C-w>h", "Window left" },
@@ -52,7 +56,7 @@ M.general = {
     ["<Down>"] = { 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', "Move down", opts = { expr = true } },
 
     -- new buffer
-    ["<leader>b"] = { "<cmd> enew <CR>", "New buffer" },
+    ["<leader>b"] = { "<cmd> new <CR>", "New buffer" },
     ["<leader>ch"] = { "<cmd> NvCheatsheet <CR>", "Mapping cheatsheet" },
 
     -- Bug not working
@@ -280,8 +284,8 @@ M.telescope = {
 
   n = {
     -- find
-    ["<leader><space>"] = { Util.telescope("files"), "Find files" },
-    ["<leader>p"] = { Util.telescope("files", {cwd = "%:p:h"}), "Find files current dir" },
+    ["<leader><space>"] = { Util.telescope "files", "Find files" },
+    ["<leader>p"] = { Util.telescope("files", { cwd = "%:p:h" }), "Find files current dir" },
     ["<leader>sa"] = { "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>", "Find all" },
     ["<leader>ss"] = { "<cmd> Telescope live_grep <CR>", "Live grep" },
     ["<leader>bb"] = { "<cmd> Telescope buffers <CR>", "Find buffers" },
@@ -416,11 +420,11 @@ M.focus = {
   plugin = true,
 
   n = {
-      ["<leader>vv"] = {
+    ["<leader>vv"] = {
       "<cmd>FocusSplitNicely<cr>",
       "Split Nicely",
-    }
-  }
+    },
+  },
 }
 
 M.gitsigns = {

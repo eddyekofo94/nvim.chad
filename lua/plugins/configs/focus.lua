@@ -1,3 +1,4 @@
+local M = {}
 local ignore_filetypes = {
   "prompt",
   "qf",
@@ -48,97 +49,98 @@ local opts = {
   -- },
 }
 
-  keys = {
-    {
-      "<leader>vj",
-      "<cmd>FocusSplitDown<cr>",
-      desc = "Split Down",
-    },
-    {
-      "<leader>ve",
-      "<cmd>FocusEnable<cr>",
-      desc = "Focus Enable",
-    },
-    {
-      "<leader>vh",
-      "<cmd>FocusSplitLeft<cr>",
-      desc = "Split Left",
-    },
-    {
-      "<leader>vt",
-      "<cmd>FocusToggle<cr>",
-      desc = "Focus Toggle",
-    },
-    {
-      "<leader>vl",
-      "<cmd>FocusSplitRight<cr>",
-      desc = "Split Right",
-    },
-    {
-      "<C-w>",
-      "<cmd>FocusSplitCycle<cr>",
-      desc = "Move next buffer",
-    },
-    {
-      "<C-\\>",
-      "<cmd>FocusAutoresize<cr>",
-      desc = "Activate autoresise",
-    },
-    {
-      "<leader>vk",
-      "<cmd>FocusSplitUp<cr>",
-      desc = "Split Right",
-    },
-    {
-      "<leader>tn",
-      "<cmd>FocusSplitNicely cmd term<cr>",
-      desc = "Terminal Nicely",
-    },
-    {
-      "<leader>vv",
-      "<cmd>FocusSplitNicely<cr>",
-      desc = "Split Nicely",
-    },
-    {
-      "<leader>ww",
-      "<cmd>FocusMaxOrEqual<cr>",
-      desc = "Max window",
-    },
-    {
-      "<leader>-",
-      "<cmd>FocusSplitDown<CR>",
-      desc = "split horizontally",
-    },
-    {
-      "<leader>=",
-      "<cmd>FocusEqualise<CR>",
-      desc = "balance windows",
-    },
-  }
+M.focus = {
+  {
+    "<leader>vj",
+    "<cmd>FocusSplitDown<cr>",
+    desc = "Split Down",
+  },
+  {
+    "<leader>ve",
+    "<cmd>FocusEnable<cr>",
+    desc = "Focus Enable",
+  },
+  {
+    "<leader>vh",
+    "<cmd>FocusSplitLeft<cr>",
+    desc = "Split Left",
+  },
+  {
+    "<leader>vt",
+    "<cmd>FocusToggle<cr>",
+    desc = "Focus Toggle",
+  },
+  {
+    "<leader>vl",
+    "<cmd>FocusSplitRight<cr>",
+    desc = "Split Right",
+  },
+  {
+    "<C-w>",
+    "<cmd>FocusSplitCycle<cr>",
+    desc = "Move next buffer",
+  },
+  {
+    "<C-\\>",
+    "<cmd>FocusAutoresize<cr>",
+    desc = "Activate autoresise",
+  },
+  {
+    "<leader>vk",
+    "<cmd>FocusSplitUp<cr>",
+    desc = "Split Right",
+  },
+  {
+    "<leader>tn",
+    "<cmd>FocusSplitNicely cmd term<cr>",
+    desc = "Terminal Nicely",
+  },
+  {
+    "<leader>vv",
+    "<cmd>FocusSplitNicely<cr>",
+    desc = "Split Nicely",
+  },
+  {
+    "<leader>ww",
+    "<cmd>FocusMaxOrEqual<cr>",
+    desc = "Max window",
+  },
+  {
+    "<leader>-",
+    "<cmd>FocusSplitDown<CR>",
+    desc = "split horizontally",
+  },
+  {
+    "<leader>=",
+    "<cmd>FocusEqualise<CR>",
+    desc = "balance windows",
+  },
+}
 
-    require("focus").setup(opts)
+require("focus").setup(opts)
 
-    -- local ignore_filetypes = { "telescope", "harpoon" }
+-- local ignore_filetypes = { "telescope", "harpoon" }
 
-    local augroup = vim.api.nvim_create_augroup("FocusDisable", { clear = true })
+local augroup = vim.api.nvim_create_augroup("FocusDisable", { clear = true })
 
-    vim.api.nvim_create_autocmd("WinEnter", {
-      group = augroup,
-      callback = function(_)
-        if vim.tbl_contains(ignore_filetypes, vim.bo.buftype) then
-          vim.b.focus_disable = true
-        end
-      end,
-      desc = "Disable focus autoresize for BufType",
-    })
+vim.api.nvim_create_autocmd("WinEnter", {
+  group = augroup,
+  callback = function(_)
+    if vim.tbl_contains(ignore_filetypes, vim.bo.buftype) then
+      vim.b.focus_disable = true
+    end
+  end,
+  desc = "Disable focus autoresize for BufType",
+})
 
-    vim.api.nvim_create_autocmd("FileType", {
-      group = augroup,
-      callback = function(_)
-        if vim.tbl_contains(ignore_filetypes, vim.bo.filetype) then
-          vim.b.focus_disable = true
-        end
-      end,
-      desc = "Disable focus autoresize for FileType",
-    })
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup,
+  callback = function(_)
+    if vim.tbl_contains(ignore_filetypes, vim.bo.filetype) then
+      vim.b.focus_disable = true
+    end
+  end,
+  desc = "Disable focus autoresize for FileType",
+})
 
+return M

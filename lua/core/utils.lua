@@ -1,6 +1,20 @@
 local M = {}
 local merge_tb = vim.tbl_deep_extend
 
+function M.keymap_set(modes, lhs, rhs, opts)
+  if type(opts) == "string" then
+    opts = { desc = opts }
+  end
+  vim.keymap.set(modes, lhs, rhs, opts)
+end
+
+M.nxo = { "n", "x", "o" } -- normal, visual, operator (for motion mappings)
+
+M.create_augroup = function(group, opts)
+  opts = opts or { clear = true }
+  return vim.api.nvim_create_augroup(group, opts)
+end
+
 M.load_config = function()
   local config = require "core.default_config"
   local chadrc_path = vim.api.nvim_get_runtime_file("lua/custom/chadrc.lua", false)[1]
@@ -115,7 +129,7 @@ M.lazy_load = function(plugin)
   })
 end
 
-M.root_patterns = { ".git"}
+M.root_patterns = { ".git" }
 
 function M.get_root()
   ---@type string?
@@ -124,7 +138,7 @@ function M.get_root()
   ---@type string[]
   local roots = {}
   if path then
-    for _, client in pairs(vim.lsp.get_clients({ bufnr = 0 })) do
+    for _, client in pairs(vim.lsp.get_clients { bufnr = 0 }) do
       local workspace = client.config.workspace_folders
       local paths = workspace
           and vim.tbl_map(function(ws)
@@ -167,7 +181,7 @@ function M.telescope(builtin, opts)
     if builtin == "files" then
       if vim.loop.fs_stat((opts.cwd or vim.loop.cwd()) .. "/.git") then
         opts.show_untracked = true
-        opts.no_ignore=false
+        opts.no_ignore = false
         builtin = "git_files"
       else
         builtin = "find_files"
@@ -178,17 +192,39 @@ function M.telescope(builtin, opts)
 end
 
 M.get_relative_fname = function()
-  local fname = vim.fn.expand("%:p")
+  local fname = vim.fn.expand "%:p"
   return fname:gsub(vim.fn.getcwd() .. "/", "")
 end
 
 M.get_relative_gitpath = function()
-  local fpath = vim.fn.expand("%:h")
-  local fname = vim.fn.expand("%:t")
+  local fpath = vim.fn.expand "%:h"
+  local fname = vim.fn.expand "%:t"
   local gitpath = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
   local relative_gitpath = fpath:gsub(gitpath, "") .. "/" .. fname
 
   return relative_gitpath
+end
+
+-- move over a closing element in insert mode
+function M.escapePair()
+  local closers = { ")", "]", "}", ">", "'", '"', "`", "," }
+  local line = vim.api.nvim_get_current_line()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local after = line:sub(col + 1, -1)
+  local closer_col = #after + 1
+  local closer_i = nil
+  for i, closer in ipairs(closers) do
+    local cur_index, _ = after:find(closer)
+    if cur_index and (cur_index < closer_col) then
+      closer_col = cur_index
+      closer_i = i
+    end
+  end
+  if closer_i then
+    vim.api.nvim_win_set_cursor(0, { row, col + closer_col })
+  else
+    vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+  end
 end
 
 return M
