@@ -1,5 +1,5 @@
-plugin
-custom
+# plugin
+# custom
 spell
 ftplugin
 syntax
@@ -8,3 +8,6 @@ coc-settings.json
 lazy-lock.json
 after
 **/.DS_Store
+.github/**
+.ignore
+LICENSE
