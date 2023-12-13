@@ -167,6 +167,7 @@ function M.telescope(builtin, opts)
     if builtin == "files" then
       if vim.loop.fs_stat((opts.cwd or vim.loop.cwd()) .. "/.git") then
         opts.show_untracked = true
+        opts.no_ignore=false
         builtin = "git_files"
       else
         builtin = "find_files"

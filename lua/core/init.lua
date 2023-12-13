@@ -9,15 +9,26 @@ g.toggle_theme_icon = "   "
 g.transparency = config.ui.transparency
 
 -------------------------------------- options ------------------------------------------
+vim.opt.title = true
+vim.o.titlestring = "%<%F%=%l/%L - nvim"
+vim.opt.errorbells = false
 opt.laststatus = 3 -- global statusline
 opt.showmode = false
+
+vim.o.wildmenu = true
+vim.o.wildoptions = "pum"
 
 opt.clipboard = "unnamedplus"
 opt.cursorline = true
 
+-- Use ripgrep as grep tool
+vim.o.grepprg = "rg --vimgrep --no-heading"
+vim.o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+
 -- Indenting
 opt.expandtab = true
 opt.shiftwidth = 2
+opt.shiftround = true
 opt.smartindent = true
 opt.tabstop = 2
 opt.softtabstop = 2
@@ -26,6 +37,9 @@ opt.fillchars = { eob = " " }
 opt.ignorecase = true
 opt.smartcase = true
 opt.mouse = "a"
+
+-- completion
+vim.opt.pumheight = 10 -- Makes popup menu smaller
 
 -- Numbers
 opt.number = true
@@ -38,10 +52,49 @@ opt.shortmess:append "sI"
 opt.signcolumn = "yes"
 opt.splitbelow = true
 opt.splitright = true
+vim.opt.inccommand = "split"
+vim.opt.splitkeep = "screen" -- topline
 opt.termguicolors = true
 opt.timeoutlen = 400
+opt.undodir = vim.fn.stdpath("data") .. "undo"
 opt.undofile = true
+vim.opt.swapfile = true
 
+vim.opt.cursorline = true
+vim.opt.scrolloff = 8
+vim.opt.sidescroll = 6
+
+vim.opt.sessionoptions = "resize,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+
+-- Bring back to the last position
+vim.api.nvim_create_autocmd("BufReadPost", {
+  callback = function()
+    local last_pos = vim.fn.line("'\"")
+    if last_pos > 0 and last_pos <= vim.fn.line("$") then
+      vim.api.nvim_win_set_cursor(0, { last_pos, 0 })
+    end
+  end,
+})
+
+-- Highlight on yank
+vim.api.nvim_create_autocmd("TextYankPost", {
+  pattern = "*",
+  callback = function()
+    vim.highlight.on_yank({ higroup = "HighlightedyankRegion", timeout = 500 })
+  end,
+})
+
+vim.cmd([[highlight HighlightedyankRegion cterm=reverse gui=reverse guifg=reverse guibg=reverse]])
+
+vim.cmd("set listchars=tab:→\\ ,nbsp:␣,trail:•,eol:↵,precedes:«,extends:»")
+
+vim.cmd([[set guicursor+=i-ci:ver30-Cursor-blinkwait500-blinkon400-blinkoff300]])
+vim.cmd([[set guicursor+=n-v-c:blinkon10]])
+
+vim.cmd([[
+  let &t_Cs = "\e[4:3m"
+  let &t_Ce = "\e[4:0m"
+]])
 -- interval for writing swap file to disk, also used by gitsigns
 opt.updatetime = 250
 

@@ -70,7 +70,16 @@ lspconfig.gopls.setup {
   capabilities = M.capabilities,
   cmd = {"gopls"},
   filetypes = { "go", "gomod" },
-  root_dir = lspconfig.util.root_pattern("go.work", "go.mod", ".git")
+  root_dir = lspconfig.util.root_pattern("go.work", "go.mod", ".git"),
+  settings = {
+    gopls = {
+      completeUnimported = true,
+      usePlaceholders = true,
+      analyses = {
+        unusedparams = true,
+      },
+    },
+  },
 }
 
 return M

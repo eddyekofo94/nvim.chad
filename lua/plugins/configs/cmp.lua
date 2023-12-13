@@ -69,45 +69,78 @@ local options = {
   formatting = formatting_style,
 
   mapping = {
-        ["<C-j>"] = cmp.mapping({
-          c = function()
-            if cmp.visible() then
-              cmp.select_next_item()
-            else
-              vim.api.nvim_feedkeys(t("<Down>"), "n", true)
-            end
-          end,
-          i = function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            else
-              fallback()
-            end
-          end,
-        }),
-        ["<C-k>"] = cmp.mapping({
-          c = function()
-            if cmp.visible() then
-              cmp.select_prev_item()
-            else
-              vim.api.nvim_feedkeys(t("<Up>"), "n", true)
-            end
-          end,
-          i = function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            else
-              fallback()
-            end
-          end,
-        }),
+    ["<C-j>"] = cmp.mapping {
+      c = function()
+        if cmp.visible() then
+          cmp.select_next_item()
+        else
+          vim.api.nvim_feedkeys(t "<Down>", "n", true)
+        end
+      end,
+      i = function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        else
+          fallback()
+        end
+      end,
+    },
+    ["<C-k>"] = cmp.mapping {
+      c = function()
+        if cmp.visible() then
+          cmp.select_prev_item()
+        else
+          vim.api.nvim_feedkeys(t "<Up>", "n", true)
+        end
+      end,
+      i = function(fallback)
+        if cmp.visible() then
+          cmp.select_prev_item()
+        else
+          fallback()
+        end
+      end,
+    },
     ["<C-d>"] = cmp.mapping.scroll_docs(-4),
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<C-Space>"] = cmp.mapping {
+      i = cmp.mapping.complete(),
+      c = function(
+        _ --[[fallback]]
+      )
+        if cmp.visible() then
+          if not cmp.confirm { select = true } then
+            return
+          end
+        else
+          cmp.complete()
+        end
+      end,
+    },
     ["<C-e>"] = cmp.mapping.close(),
     ["<CR>"] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Insert,
-      select = true,
+      i = function(fallback)
+        if cmp.visible() and cmp.get_active_entry() then
+          cmp.confirm {
+            -- For Copilot -- INFO: not using this (yet)
+            behavior = cmp.ConfirmBehavior.Insert,
+            -- Only when explicitly selected
+            select = false,
+          }
+        else
+          -- fallback()
+          cmp.confirm {
+            -- For Copilot -- INFO: not using this (yet)
+            behavior = cmp.ConfirmBehavior.Insert,
+            -- Only when explicitly selected
+            select = false,
+          }
+        end
+      end,
+      s = cmp.mapping.confirm { select = true },
+      c = cmp.mapping.confirm { behavior = cmp.ConfirmBehavior.Replace, select = true },
+      -- behavior = cmp.ConfirmBehavior.Insert,
+      -- select = true,
     },
     ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
@@ -147,4 +180,33 @@ if cmp_style ~= "atom" and cmp_style ~= "atom_colored" then
   options.window.completion.border = border "CmpBorder"
 end
 
+-- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline({ "/", "?" }, {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = "nvim_lsp_document_symbol" },
+    { name = "buffer" },
+  },
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(":", {
+  mapping = cmp.mapping.preset.cmdline(),
+  enabled = function()
+    -- Set of commands where cmp will be disabled
+    local disabled = {
+      IncRename = true,
+    }
+    -- Get first word of cmdline
+    local cmd = vim.fn.getcmdline():match "%S+"
+    -- Return true if cmd isn't disabled
+    -- else call/return cmp.close(), which returns false
+    return not disabled[cmd] or cmp.close()
+  end,
+  sources = cmp.config.sources {
+    { name = "cmdline", max_item_count = 30 },
+    { name = "cmdline_history", max_item_count = 10 },
+    { name = "path", max_item_count = 20 },
+  },
+})
 return options

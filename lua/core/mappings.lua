@@ -17,6 +17,14 @@ M.general = {
   },
 
   n = {
+        ["<leader>oo"] = {
+          ':<C-u>call append(line("."),   repeat([""], v:count1))<CR>',
+          "inset line",
+      },
+      ["<leader>OO"] = {
+          ':<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>',
+          "inset line",
+      },
     ["<Esc>"] = { "<cmd> noh <CR>", "Clear highlights" },
     -- switch between windows
     ["<C-h>"] = { "<C-w>h", "Window left" },
@@ -47,6 +55,7 @@ M.general = {
     ["<leader>b"] = { "<cmd> enew <CR>", "New buffer" },
     ["<leader>ch"] = { "<cmd> NvCheatsheet <CR>", "Mapping cheatsheet" },
 
+    -- Bug not working
     ["<leader>fm"] = {
       function()
         vim.lsp.buf.format { async = true }
@@ -271,8 +280,9 @@ M.telescope = {
 
   n = {
     -- find
-    ["<leader><space>"] = { Util.telescope("files",{ hidden=false }), "Find files" },
-    ["<leader>sp"] = { "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>", "Find all" },
+    ["<leader><space>"] = { Util.telescope("files"), "Find files" },
+    ["<leader>p"] = { Util.telescope("files", {cwd = "%:p:h"}), "Find files current dir" },
+    ["<leader>sa"] = { "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>", "Find all" },
     ["<leader>ss"] = { "<cmd> Telescope live_grep <CR>", "Live grep" },
     ["<leader>bb"] = { "<cmd> Telescope buffers <CR>", "Find buffers" },
     ["<leader>sh"] = { "<cmd> Telescope help_tags <CR>", "Help page" },
@@ -351,7 +361,7 @@ M.nvterm = {
       "New horizontal term",
     },
 
-    ["<leader>v"] = {
+    ["<leader>tv"] = {
       function()
         require("nvterm.terminal").new "vertical"
       end,
@@ -400,6 +410,17 @@ M.blankline = {
       "Jump to current context",
     },
   },
+}
+
+M.focus = {
+  plugin = true,
+
+  n = {
+      ["<leader>vv"] = {
+      "<cmd>FocusSplitNicely<cr>",
+      "Split Nicely",
+    }
+  }
 }
 
 M.gitsigns = {
