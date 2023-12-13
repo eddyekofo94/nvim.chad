@@ -119,7 +119,21 @@ local default_plugins = {
       require("gitsigns").setup(opts)
     end,
   },
-
+ {
+    "kdheepak/lazygit.nvim",
+    enabled = true,
+    keys = {
+      {
+        "<leader>G",
+        function()
+          return vim.cmd([[LazyGit]])
+        end,
+        desc = "Lazygit",
+      },
+    },
+    event = "VeryLazy",
+    dependencies = { "nvim-lua/plenary.nvim" },
+  },
   -- lsp stuff
   {
     "williamboman/mason.nvim",
