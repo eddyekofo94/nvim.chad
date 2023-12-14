@@ -21,10 +21,11 @@ M.general = {
       ':<C-u>call append(line("."),   repeat([""], v:count1))<CR>',
       "inset line",
     },
-    ["OO"] = {
+    ["<leader>OO"] = {
       ':<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>',
       "inset line",
     },
+    ["<leader>W"] = { "<C-W>q", "Close Window" },
     ["<S-x>"] = {
       [[<Cmd>bdelete!<CR>]],
       "Delete buffer",
@@ -42,6 +43,7 @@ M.general = {
     -- Copy all
     ["<C-c>"] = { "<cmd> %y+ <CR>", "Copy whole file" },
 
+    ["<leader>z"] = { "<cmd>ZenMode<cr>", "zen mode" },
     -- line numbers
     ["<leader>n"] = { "<cmd> set nu! <CR>", "Toggle line number" },
     ["<leader>rn"] = { "<cmd> set rnu! <CR>", "Toggle relative number" },
