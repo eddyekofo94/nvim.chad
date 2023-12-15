@@ -12,7 +12,8 @@ local options = {
       "--smart-case",
     },
     prompt_prefix = "   ",
-    selection_caret = "  ",
+    -- selection_caret = "  ",
+    selection_caret = "  ",
     entry_prefix = "  ",
     initial_mode = "insert",
     selection_strategy = "reset",
@@ -71,8 +72,8 @@ local options = {
         ["<esc>"] = actions.close,
         ["<C-x>"] = actions.select_horizontal,
         ["<C-v>"] = actions.select_vertical,
-        ["<C-Down>"] = require("telescope.actions").cycle_history_next,
-        ["<C-Up>"] = require("telescope.actions").cycle_history_prev,
+        ["<C-Down>"] = actions.cycle_history_next,
+        ["<C-Up>"] = actions.cycle_history_prev,
         ["<C-t>"] = actions.select_tab,
         ["<C-f>"] = actions.preview_scrolling_down,
         ["<C-b>"] = actions.preview_scrolling_up,
@@ -88,7 +89,7 @@ local options = {
     },
   },
 
-  extensions_list = { "themes", "terms", "fzf" },
+  extensions_list = { "zoxide", "projects", "themes", "terms", "fzf" },
   extensions = {
     fzf = {
       fuzzy = true,

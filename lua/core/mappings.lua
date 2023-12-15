@@ -1,7 +1,6 @@
 -- n, v, i, t = mode names
 
 local M = {}
-local Util = require "core.utils"
 
 M.general = {
   i = {
@@ -10,26 +9,13 @@ M.general = {
     ["<C-e>"] = { "<End>", "End of line" },
 
     -- navigate within insert mode
-    -- ["<C-h>"] = { "<Left>", "Move left" },
-    -- ["<C-l>"] = { "<Right>", "Move right" },
-    -- ["<C-j>"] = { "<Down>", "Move down" },
-    -- ["<C-k>"] = { "<Up>", "Move up" },
+    ["<C-h>"] = { "<Left>", "Move left" },
+    ["<C-l>"] = { "<Right>", "Move right" },
+    ["<C-j>"] = { "<Down>", "Move down" },
+    ["<C-k>"] = { "<Up>", "Move up" },
   },
 
   n = {
-    ["<leader>oo"] = {
-      ':<C-u>call append(line("."),   repeat([""], v:count1))<CR>',
-      "inset line",
-    },
-    ["<leader>OO"] = {
-      ':<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>',
-      "inset line",
-    },
-    ["<leader>W"] = { "<C-W>q", "Close Window" },
-    ["<S-x>"] = {
-      [[<Cmd>bdelete!<CR>]],
-      "Delete buffer",
-    },
     ["<Esc>"] = { "<cmd> noh <CR>", "Clear highlights" },
     -- switch between windows
     ["<C-h>"] = { "<C-w>h", "Window left" },
@@ -43,7 +29,6 @@ M.general = {
     -- Copy all
     ["<C-c>"] = { "<cmd> %y+ <CR>", "Copy whole file" },
 
-    ["<leader>z"] = { "<cmd>ZenMode<cr>", "zen mode" },
     -- line numbers
     ["<leader>n"] = { "<cmd> set nu! <CR>", "Toggle line number" },
     ["<leader>rn"] = { "<cmd> set rnu! <CR>", "Toggle relative number" },
@@ -61,7 +46,6 @@ M.general = {
     ["<leader>b"] = { "<cmd> new <CR>", "New buffer" },
     ["<leader>ch"] = { "<cmd> NvCheatsheet <CR>", "Mapping cheatsheet" },
 
-    -- Bug not working
     ["<leader>fm"] = {
       function()
         vim.lsp.buf.format { async = true }
@@ -286,14 +270,13 @@ M.telescope = {
 
   n = {
     -- find
-    ["<leader><space>"] = { Util.telescope "files", "Find files" },
-    ["<leader>p"] = { Util.telescope("files", { cwd = "%:p:h" }), "Find files current dir" },
-    ["<leader>sa"] = { "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>", "Find all" },
-    ["<leader>ss"] = { "<cmd> Telescope live_grep <CR>", "Live grep" },
-    ["<leader>bb"] = { "<cmd> Telescope buffers <CR>", "Find buffers" },
-    ["<leader>sh"] = { "<cmd> Telescope help_tags <CR>", "Help page" },
-    ["<leader>so"] = { "<cmd> Telescope oldfiles <CR>", "Find oldfiles" },
-    ["<leader>sz"] = { "<cmd> Telescope current_buffer_fuzzy_find <CR>", "Find in current buffer" },
+    ["<leader>ff"] = { "<cmd> Telescope find_files <CR>", "Find files" },
+    ["<leader>fa"] = { "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>", "Find all" },
+    ["<leader>fw"] = { "<cmd> Telescope live_grep <CR>", "Live grep" },
+    ["<leader>fb"] = { "<cmd> Telescope buffers <CR>", "Find buffers" },
+    ["<leader>fh"] = { "<cmd> Telescope help_tags <CR>", "Help page" },
+    ["<leader>fo"] = { "<cmd> Telescope oldfiles <CR>", "Find oldfiles" },
+    ["<leader>fz"] = { "<cmd> Telescope current_buffer_fuzzy_find <CR>", "Find in current buffer" },
 
     -- git
     ["<leader>cm"] = { "<cmd> Telescope git_commits <CR>", "Git commits" },
@@ -367,7 +350,7 @@ M.nvterm = {
       "New horizontal term",
     },
 
-    ["<leader>tv"] = {
+    ["<leader>v"] = {
       function()
         require("nvterm.terminal").new "vertical"
       end,
@@ -414,17 +397,6 @@ M.blankline = {
       end,
 
       "Jump to current context",
-    },
-  },
-}
-
-M.focus = {
-  plugin = true,
-
-  n = {
-    ["<leader>vv"] = {
-      "<cmd>FocusSplitNicely<cr>",
-      "Split Nicely",
     },
   },
 }

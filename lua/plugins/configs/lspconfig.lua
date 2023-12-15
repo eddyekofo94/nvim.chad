@@ -3,7 +3,7 @@ require "nvchad.lsp"
 
 local M = {}
 local utils = require "core.utils"
-local lspconfig = require("lspconfig")
+local lspconfig = require "lspconfig"
 
 -- export on_attach & capabilities for custom lspconfigs
 
@@ -60,23 +60,6 @@ lspconfig.lua_ls.setup {
         },
         maxPreload = 100000,
         preloadFileSize = 10000,
-      },
-    },
-  },
-}
-
-lspconfig.gopls.setup {
-  on_attach = M.on_attach,
-  capabilities = M.capabilities,
-  cmd = {"gopls"},
-  filetypes = { "go", "gomod" },
-  root_dir = lspconfig.util.root_pattern("go.work", "go.mod", ".git"),
-  settings = {
-    gopls = {
-      completeUnimported = true,
-      usePlaceholders = true,
-      analyses = {
-        unusedparams = true,
       },
     },
   },

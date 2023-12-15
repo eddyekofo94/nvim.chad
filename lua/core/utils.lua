@@ -1,6 +1,8 @@
 local M = {}
 local merge_tb = vim.tbl_deep_extend
 
+M.nxo = { "n", "x", "o" } -- normal, visual, operator (for motion mappings)
+
 function M.keymap_set(modes, lhs, rhs, opts)
   if type(opts) == "string" then
     opts = { desc = opts }
@@ -8,8 +10,12 @@ function M.keymap_set(modes, lhs, rhs, opts)
   vim.keymap.set(modes, lhs, rhs, opts)
 end
 
-M.nxo = { "n", "x", "o" } -- normal, visual, operator (for motion mappings)
-
+M.nmap = function(tbl)
+  if type(tbl[3]) == "string" then
+    tbl[3] = { desc = tbl[3] }
+  end
+  vim.keymap.set("n", tbl[1], tbl[2], tbl[3])
+end
 M.create_augroup = function(group, opts)
   opts = opts or { clear = true }
   return vim.api.nvim_create_augroup(group, opts)

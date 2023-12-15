@@ -1,6 +1,8 @@
 local M = {}
 local ignore_filetypes = {
   "prompt",
+  "NvimTree",
+  "nvim-tree",
   "qf",
   "git-conflict",
   "dap-repl",

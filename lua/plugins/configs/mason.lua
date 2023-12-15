@@ -1,7 +1,6 @@
 local options = {
   ensure_installed = {
     "lua-language-server",
-    "gopls"
   }, -- not an option from mason.nvim
 
   PATH = "skip",

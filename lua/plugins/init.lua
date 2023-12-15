@@ -58,6 +58,7 @@ local default_plugins = {
   {
     "lukas-reineke/indent-blankline.nvim",
     version = "2.20.7",
+    enabled = false,
     init = function()
       require("core.utils").lazy_load "indent-blankline.nvim"
     end,
@@ -73,6 +74,14 @@ local default_plugins = {
 
   {
     "nvim-treesitter/nvim-treesitter",
+    dependencies = {
+      { "nvim-treesitter/nvim-treesitter-context", config = true },
+      {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        -- config = true,
+        init = function() end,
+      },
+    },
     init = function()
       require("core.utils").lazy_load "nvim-treesitter"
     end,
@@ -234,7 +243,11 @@ local default_plugins = {
 
   {
     "nvim-telescope/telescope.nvim",
-    dependencies = { "nvim-treesitter/nvim-treesitter", { "nvim-telescope/telescope-fzf-native.nvim", build = "make" } },
+    dependencies = {
+      "jvgrootveld/telescope-zoxide",
+      "nvim-treesitter/nvim-treesitter",
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    },
     cmd = "Telescope",
     init = function()
       require("core.utils").load_mappings "telescope"

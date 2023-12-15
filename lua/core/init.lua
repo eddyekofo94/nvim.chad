@@ -9,11 +9,26 @@ g.toggle_theme_icon = "   "
 g.transparency = config.ui.transparency
 
 -------------------------------------- options ------------------------------------------
-vim.opt.title = true
-vim.o.titlestring = "%<%F%=%l/%L - nvim"
 vim.opt.errorbells = false
 opt.laststatus = 3 -- global statusline
 opt.showmode = false
+
+vim.opt.fillchars = {
+  fold = " ",
+  foldopen = "",
+  foldclose = "",
+  foldsep = " ",
+  diff = "╱",
+  eob = " ",
+}
+
+vim.opt.shortmess = {
+  A = true, -- ignore annoying swap file messages
+  c = true, -- Do not show completion messages in command line
+  F = true, -- Do not show file info when editing a file, in the command line
+  I = true, -- Do not show the intro message
+  W = true, -- Do not show "written" in command line when writing
+}
 
 vim.o.wildmenu = true
 vim.o.wildoptions = "pum"
@@ -56,7 +71,7 @@ vim.opt.inccommand = "split"
 vim.opt.splitkeep = "screen" -- topline
 opt.termguicolors = true
 opt.timeoutlen = 400
-opt.undodir = vim.fn.stdpath("data") .. "undo"
+opt.undodir = vim.fn.stdpath "data" .. "undo"
 opt.undofile = true
 vim.opt.swapfile = true
 
@@ -69,8 +84,8 @@ vim.opt.sessionoptions = "resize,buffers,curdir,folds,help,tabpages,winsize,winp
 -- Bring back to the last position
 vim.api.nvim_create_autocmd("BufReadPost", {
   callback = function()
-    local last_pos = vim.fn.line("'\"")
-    if last_pos > 0 and last_pos <= vim.fn.line("$") then
+    local last_pos = vim.fn.line "'\""
+    if last_pos > 0 and last_pos <= vim.fn.line "$" then
       vim.api.nvim_win_set_cursor(0, { last_pos, 0 })
     end
   end,
@@ -80,27 +95,33 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 vim.api.nvim_create_autocmd("TextYankPost", {
   pattern = "*",
   callback = function()
-    vim.highlight.on_yank({ higroup = "HighlightedyankRegion", timeout = 500 })
+    vim.highlight.on_yank { higroup = "HighlightedyankRegion", timeout = 500 }
   end,
 })
 
-vim.cmd([[highlight HighlightedyankRegion cterm=reverse gui=reverse guifg=reverse guibg=reverse]])
+vim.cmd [[highlight HighlightedyankRegion cterm=reverse gui=reverse guifg=reverse guibg=reverse]]
 
-vim.cmd("set listchars=tab:→\\ ,nbsp:␣,trail:•,eol:↵,precedes:«,extends:»")
+vim.cmd "set listchars=tab:→\\ ,nbsp:␣,trail:•,eol:↵,precedes:«,extends:»"
+vim.opt.list = true
 
-vim.cmd([[set guicursor+=i-ci:ver30-Cursor-blinkwait500-blinkon400-blinkoff300]])
-vim.cmd([[set guicursor+=n-v-c:blinkon10]])
+vim.cmd [[set guicursor+=i-ci:ver30-Cursor-blinkwait500-blinkon400-blinkoff300]]
+vim.cmd [[set guicursor+=n-v-c:blinkon10]]
 
-vim.cmd([[
+vim.cmd [[
   let &t_Cs = "\e[4:3m"
   let &t_Ce = "\e[4:0m"
-]])
+]]
 -- interval for writing swap file to disk, also used by gitsigns
 opt.updatetime = 250
 
 -- go to previous/next line with h,l,left arrow and right arrow
 -- when cursor reaches end/beginning of line
 opt.whichwrap:append "<>[]hl"
+
+-- BUG: not working
+local number_cl = vim.api.nvim_get_hl(0, { name = "Number" })["fg"]
+vim.api.nvim_set_hl(0, "WinSeparator", { fg = number_cl })
+vim.api.nvim_set_hl(0, "OverLength", { bg = "#840000" })
 
 g.mapleader = " "
 
