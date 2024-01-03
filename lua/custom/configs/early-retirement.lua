@@ -35,4 +35,5 @@ local opts = {
   -- Show notification on closing. Works with nvim-notify or noice.nvim
   notificationOnAutoClose = false,
 }
+
 return opts
