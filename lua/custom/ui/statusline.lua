@@ -151,6 +151,19 @@ function statusline.filename()
   end
 end
 
+function statusline.line_percentage()
+  local curr_line = vim.api.nvim_win_get_cursor(0)[1]
+  local lines = vim.api.nvim_buf_line_count(0)
+
+  if curr_line == 1 then
+    return "Top"
+  elseif curr_line == lines then
+    return "Bot"
+  else
+    return string.format("%2d%%%%", math.ceil(curr_line / lines * 99))
+  end
+end
+
 function statusline.file_info()
   local icon = "󰈚 "
   local path = vim.api.nvim_buf_get_name(stbufnr())
