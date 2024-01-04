@@ -54,15 +54,37 @@ lspconfig.gopls.setup {
   cmd = { "gopls" },
   filetypes = { "go", "gomod" },
   root_dir = lspconfig.util.root_pattern("go.work", "go.mod", ".git"),
-  settings = {
+  analyses = {
+    shadow = true,
+    nilness = true,
+    unusedparams = true,
+    unusedwrite = true,
+    useany = true,
+  },
+  experimentalPostfixCompletions = true,
+  gofumpt = true,
+  workspace = {
+    didChangeWatchedFiles = {
+      dynamicRegistration = false,
+    },
+  },
+  setting = {
     gopls = {
       completeUnimported = true,
       usePlaceholders = true,
-      analyses = {
-        unusedparams = true,
-      },
     },
   },
+  usePlaceholders = true,
+  hints = {
+    assignVariableTypes = true,
+    compositeLiteralFields = true,
+    compositeLiteralTypes = true,
+    constantValues = true,
+    functionTypeParameters = true,
+    parameterNames = true,
+    rangeVariableTypes = true,
+  },
+  staticcheck = true,
 }
 
 lspconfig.pylsp.setup {

@@ -1,16 +1,22 @@
 local utils = require "core.utils"
 local keymap = utils.keymap_set
-local escapePair = utils.escapePair
 local nxo = utils.nxo
 
 keymap("v", "/", '"fy/\\V<C-R>f<CR>')
 keymap("v", "*", '"fy/\\V<C-R>f<CR>')
 
 keymap("i", "jj", "<ESC>", "Escape")
+-- CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
+keymap("i", "<C-c>", "<esc>")
 
 -- Easier line-wise movement
 keymap(nxo, "gh", "g^")
 keymap(nxo, "gl", "g$")
+
+keymap("n", "<S-x>", [[<Cmd>bdelete!<CR>]]) -- close all other buffers but this one
+
+-- don't yank on paste
+keymap("x", "p", '"_dP')
 
 -- select until the end of the line
 keymap("x", "v", "$h", "select until end")
@@ -19,7 +25,7 @@ keymap("x", "p", '"_dP', "don't yank on paste")
 
 -- Whatever you delete, make it go away
 keymap({ "n", "x" }, "c", '"_c')
-keymap(nxo, "%", "gg0vG$")
+
 keymap({ "n", "x" }, "C", '"_C')
 keymap({ "n", "x" }, "S", '"_S', "Don't save to register")
 
@@ -27,7 +33,7 @@ keymap({ "n", "x" }, "x", '"_x')
 keymap("x", "X", '"_c')
 -- move over a closing element in insert mode
 keymap("i", "<C-l>", function()
-  return escapePair()
+  return utils.escapePair()
 end, { desc = "move over a closing element in insert mode" })
 
 keymap({ "n", "x" }, "*", "*N", { desc = "Search word or selection" })

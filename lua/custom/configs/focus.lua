@@ -83,11 +83,6 @@ M.focus = {
     desc = "Move next buffer",
   },
   {
-    "<C-\\>",
-    "<cmd>FocusAutoresize<cr>",
-    desc = "Activate autoresise",
-  },
-  {
     "<leader>vk",
     "<cmd>FocusSplitUp<cr>",
     desc = "Split Right",

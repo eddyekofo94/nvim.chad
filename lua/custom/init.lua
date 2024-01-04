@@ -1,15 +1,10 @@
--- require "custom.keymaps"
--- require "custom.autocommands"
-
--- import configs
--- require "custom.plugins"
-
 -------------------------------------- globals -----------------------------------------
 -- INFO use this
 
 -------------------------------------- options ------------------------------------------
 -- vim.opt.title = true
 -- vim.o.titlestring = "%<%F%=%l/%L - nvim"
+
 vim.opt.errorbells = false
 
 vim.opt.fillchars = {
@@ -19,6 +14,15 @@ vim.opt.fillchars = {
   foldsep = " ",
   diff = "╱",
   eob = " ",
+}
+
+vim.opt.listchars = {
+  tab = "→\\ ",
+  trail = "•",
+  precedes = "«",
+  extends = "»",
+  eol = "↲",
+  nbsp = "␣",
 }
 
 vim.opt.shortmess = {
@@ -43,11 +47,15 @@ vim.opt.pumheight = 10 -- Makes popup menu smaller
 
 -- Numbers
 
--- disable nvim intro
-
+vim.opt.signcolumn = "yes:1"
 vim.opt.inccommand = "split"
 vim.opt.splitkeep = "screen" -- topline
+vim.o.history = 10000 -- Number of command-lines that are remembered
 vim.opt.swapfile = true
+
+vim.o.lazyredraw = false -- Faster scrolling
+
+vim.opt.undodir = vim.fn.stdpath "data" .. "undo"
 
 vim.opt.cursorline = true
 vim.opt.scrolloff = 8
@@ -57,7 +65,6 @@ vim.opt.sessionoptions = "resize,buffers,curdir,folds,help,tabpages,winsize,winp
 
 vim.cmd [[highlight HighlightedyankRegion cterm=reverse gui=reverse guifg=reverse guibg=reverse]]
 
-vim.cmd "set listchars=tab:→\\ ,nbsp:␣,trail:•,eol:↵,precedes:«,extends:»"
 vim.opt.list = true
 
 vim.cmd [[set guicursor+=i-ci:ver30-Cursor-blinkwait500-blinkon400-blinkoff300]]
@@ -74,7 +81,7 @@ vim.api.nvim_set_hl(0, "WinSeparator", { fg = number_cl })
 vim.api.nvim_set_hl(0, "OverLength", { bg = "#840000" })
 
 -------------------------------------- autocmds ------------------------------------------
---require "custom.autocommands"
+require "custom.autocommands"
 -------------------------------------- keymaps ------------------------------------------
 require "custom.keymaps"
 -------------------------------------- commands ------------------------------------------

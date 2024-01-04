@@ -16,6 +16,7 @@ local plugins = {
   {
     "notjedi/nvim-rooter.lua",
     lazy = false,
+    enabled = false,
     config = function()
       require("nvim-rooter").setup {
         fallback_to_parent = true,
@@ -145,14 +146,13 @@ local plugins = {
           "pyproject.toml",
         },
         detection_methods = { "lsp", "pattern" },
-        -- detection_methods = { "pattern" },
       }
     end,
   },
   {
     "RRethy/vim-illuminate",
     -- INFO: disabled for now
-    enabled = false,
+    -- enabled = false,
     event = "BufReadPre",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
@@ -177,7 +177,10 @@ local plugins = {
   },
   {
     "stevearc/oil.nvim",
-    config = true,
+    lazy = false,
+    config = function()
+      require "custom.configs.oil"
+    end,
     keys = {
       {
         "-",
@@ -242,6 +245,44 @@ local plugins = {
         },
         open = { enable = true },
         close = { enable = false },
+      }
+    end,
+  },
+  {
+    "echasnovski/mini.trailspace",
+    version = "*",
+    event = "BufEnter",
+    config = function()
+      require("mini.trailspace").setup()
+    end,
+  },
+  {
+    "folke/lsp-trouble.nvim",
+    event = "LspAttach",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      -- mapped to <space>lt -- this shows a list of diagnostics
+      require("trouble").setup {
+        height = 12, -- height of the trouble list
+        mode = "document_diagnostics",
+        use_diagnostic_signs = true, -- enabling this will use the signs defined in your lsp client
+        action_keys = {
+          -- key mappings for actions in the trouble list
+          close = "q", -- close the list
+          cancel = "<esc>", -- cancel the preview and get back to your last window / buffer / cursor
+          refresh = "r", -- manually refresh
+          jump = { "<cr>", "<tab>" }, -- jump to the diagnostic or open / close folds
+          jump_close = { "o" }, -- jump to the diagnostic and close the list
+          toggle_mode = "m", -- toggle between "workspace" and "document" diagnostics mode
+          toggle_preview = "P", -- toggle auto_preview
+          hover = "K", -- opens a small poup with the full multiline message
+          preview = "p", -- preview the diagnostic location
+          close_folds = { "zM", "zm" }, -- close all folds
+          open_folds = { "zR", "zr" }, -- open all folds
+          toggle_fold = { "zA", "za" }, -- toggle fold of current file
+          previous = "k", -- preview item
+          next = "j", -- next item
+        },
       }
     end,
   },
