@@ -5,14 +5,85 @@ local plugins = {
   -- LSP
   {
     "neovim/nvim-lspconfig",
-    dependencies = {},
+    dependencies = {
+      "folke/neodev.nvim",
+    },
     config = function()
       require "plugins.configs.lspconfig"
       require "custom.configs.lspconfig"
     end,
   },
-
+  {
+    "mireq/luasnip-snippets",
+    dependencies = {
+      "L3MON4D3/LuaSnip",
+    },
+    init = function()
+      require("luasnip_snippets.common.snip_utils").setup()
+    end,
+  },
+  -- treesitter HERE
+  -- Automatically fill/change/remove xml-like tags
+  { "windwp/nvim-ts-autotag", opts = {} },
+  {
+    "willothy/flatten.nvim",
+    config = true,
+    -- or pass configuration with
+    -- opts = {  }
+    -- Ensure that it runs first to minimize delay when opening file from terminal
+    lazy = false,
+    priority = 1001,
+  },
+  -- Better notifications and messagess
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {
+      hover = {
+        enabled = false,
+      },
+    },
+    config = function()
+      -- code
+      require "custom.configs.noice"
+    end,
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+    },
+  },
+  {
+    "samjwill/nvim-unception",
+    enabled = false,
+    init = function()
+      vim.g.unception_delete_replaced_buffer = true
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "UnceptionEditRequestReceived",
+        callback = function()
+          require("nvterm.terminal").hide "horizontal"
+        end,
+      })
+    end,
+  },
   { "b0o/schemastore.nvim", event = "VeryLazy", ft = { "json" } },
+  -- Global search and replace within cwd
+  {
+    "nvim-pack/nvim-spectre",
+    config = function()
+      local spectre = require "spectre"
+
+      vim.keymap.set("n", "<D-S-r>", spectre.toggle, {
+        desc = "Toggle Spectre",
+      })
+      vim.keymap.set("v", "<D-S-r>", spectre.open_visual, {
+        desc = "Toggle Spectre",
+      })
+    end,
+  },
   {
     "notjedi/nvim-rooter.lua",
     lazy = false,
@@ -312,6 +383,17 @@ local plugins = {
     },
     config = function(_, opts)
       require("mini.surround").setup(opts)
+    end,
+  },
+  {
+    "kylechui/nvim-surround",
+    event = "VeryLazy",
+    keys = {
+      { "s", mode = { "n", "x", "o" } },
+      { "S", mode = "x" },
+    },
+    config = function()
+      require "custom.configs.nvim-surround"
     end,
   },
   -- {

@@ -14,7 +14,14 @@ M.ui = {
 
       table.insert(
         modules,
-        6,
+        4,
+        (function()
+          return statusline.search_count()
+        end)()
+      )
+      table.insert(
+        modules,
+        7,
         (function()
           return statusline.lsp_progress()
         end)()
@@ -32,5 +39,8 @@ M.ui = {
 }
 M.plugins = "custom.plugins"
 M.mappings = require "custom.mappings"
+
+-- INFO: not working
+require "custom.ui.statuscolumn"
 
 return M

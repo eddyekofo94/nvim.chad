@@ -8,9 +8,9 @@
 vim.opt.errorbells = false
 
 vim.opt.fillchars = {
+  foldopen = "",
+  foldclose = "",
   fold = " ",
-  foldopen = "",
-  foldclose = "",
   foldsep = " ",
   diff = "╱",
   eob = " ",
@@ -55,13 +55,48 @@ vim.opt.swapfile = true
 
 vim.o.lazyredraw = false -- Faster scrolling
 
+-- vim.opt.wrap = false
+vim.cmd [[set nowrap]] -- Display long lines as just one line
+
 vim.opt.undodir = vim.fn.stdpath "data" .. "undo"
+
+if vim.fn.has "nvim-0.10" == 1 then
+  vim.opt.smoothscroll = true
+  vim.opt.statuscolumn = [[%!v:lua.require'custom.ui.statuscolumn'.statuscolumn()]]
+end
+
+-- Folding
+vim.opt.foldlevel = 99
+vim.opt.foldtext = [[v:lua.require'custom.ui.folds'.foldtext()]]
+
+-- HACK: causes freezes on <= 0.9, so only enable on >= 0.10 for now
+if vim.fn.has "nvim-0.10" == 1 then
+  vim.opt.foldmethod = "expr"
+  vim.opt.foldexpr = [[v:lua.require'custom.ui.folds'.foldexpr()]]
+else
+  vim.opt.foldmethod = "indent"
+end
 
 vim.opt.cursorline = true
 vim.opt.scrolloff = 8
 vim.opt.sidescroll = 6
 
-vim.opt.sessionoptions = "resize,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+-- vim.opt.sessionoptions = "resize,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+vim.opt.sessionoptions = {
+  "resize",
+  "winpos",
+  "winsize",
+  "terminal",
+  "localoptions",
+  "buffers",
+  "curdir",
+  "tabpages",
+  "winsize",
+  "help",
+  "globals",
+  "skiprtp",
+  "folds",
+}
 
 vim.cmd [[highlight HighlightedyankRegion cterm=reverse gui=reverse guifg=reverse guibg=reverse]]
 

@@ -3,6 +3,7 @@ local autocmd = vim.api.nvim_create_autocmd
 local augroup = utils.create_augroup
 local contains = vim.tbl_contains
 local keymap = utils.keymap_set
+local opt_local = vim.opt_local
 
 local smart_close_filetypes = {
   "prompt",
@@ -51,6 +52,18 @@ autocmd("BufRead", {
 autocmd("CmdLineLeave", {
   callback = function()
     vim.api.nvim_feedkeys("zz", "n", false)
+  end,
+})
+
+-- Auto create dir when saving a file, in case some intermediate directory does not exist
+autocmd({ "BufWritePre" }, {
+  group = augroup "auto_create_dir",
+  callback = function(event)
+    if event.match:match "^%w%w+://" then
+      return
+    end
+    local file = vim.loop.fs_realpath(event.match) or event.match
+    vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
   end,
 })
 
@@ -107,6 +120,29 @@ autocmd("FileType", {
   end,
 })
 
+-- local cursor_line = augroup "LocalCursorLine"
+--
+-- autocmd({ "BufNew", "BufEnter", "BufWinEnter" }, {
+--   group = cursor_line,
+--   pattern = smart_close_filetypes,
+--   callback = function()
+--     opt_local.number = false -- Display line numbers in the focussed window only
+--     opt_local.relativenumber = false -- Display relative line numbers in the focussed window only
+--     opt_local.cursorcolumn = false
+--   end,
+-- })
+--
+-- autocmd({ "BufLeave", "BufWinLeave" }, {
+--   group = cursor_line,
+--   pattern = smart_close_filetypes,
+--   callback = function()
+--     opt_local.number = true -- Display line numbers in the focussed window only
+--     opt_local.relativenumber = true -- Display relative line numbers in the focussed window only
+--     opt_local.cursorline = true -- Display a cursorline in the focussed window only
+--     opt_local.cursorcolumn = true
+--   end,
+-- })
+
 local disable_codespell = augroup "DisableCodespell"
 autocmd({ "BufEnter" }, {
   group = disable_codespell,
@@ -117,7 +153,6 @@ autocmd({ "BufEnter" }, {
 })
 
 -- wrap telescope previewwindow
--- BUG: not working!
 local telescope_preview_wrap = augroup "WrapTelescopePreviewer"
 autocmd("User", {
   group = telescope_preview_wrap,

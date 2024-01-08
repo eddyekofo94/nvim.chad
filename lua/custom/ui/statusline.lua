@@ -164,6 +164,20 @@ function statusline.line_percentage()
   end
 end
 
+function statusline.search_count()
+  if vim.v.hlsearch == 0 then
+    return ""
+  end
+
+  local result = vim.fn.searchcount { maxcount = 999, timeout = 250 }
+
+  if result.incomplete == 1 or next(result) == nil then
+    return ""
+  end
+
+  return string.format("[%d/%d] ", result.current, math.min(result.total, result.maxcount))
+end
+
 function statusline.file_info()
   local icon = "󰈚 "
   local path = vim.api.nvim_buf_get_name(stbufnr())

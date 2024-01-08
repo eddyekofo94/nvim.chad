@@ -1,7 +1,6 @@
 local opts = {
   highlight = {
     bg = vim.api.nvim_get_hl(0, { name = "EndOfBuffer" })["bg"],
-    -- fg = "#c099ff",
     fg = vim.api.nvim_get_hl(0, { name = "LineNr" })["fg"],
   },
   -- interval = 50,
