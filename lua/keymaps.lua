@@ -1,33 +1,26 @@
-require "nvchad.mappings"
-
 --  INFO: Utils
 local utils = require "utils.keymaps"
 local utils_buffer = require "utils.buffer"
 local keymap = utils.set_keymap
 local nxo = utils.nxo
 local maps = require("utils").empty_map_table()
-local lkeymap = utils.set_leader_keymap
+local set_leader_keymap = utils.set_leader_keymap
 local Telescope = require "utils.telescope"
 local Buffers = require "utils.buffer"
 
 local Keymap = {}
 
---  INFO: Buffers
-lkeymap("wx", function()
-  Buffers.close_window()
-end, "Close window")
+-- set_leader_keymap("space", Telescope.find "files", "Search ")
 
 -- INFO: Disable mappings
 local nomap = vim.keymap.del
 
--- nomap("i", "<C-k>")
--- nomap("i", "<C-l>")
--- nomap("i", "<C-j>")
--- nomap("i", "<C-h>")
-nomap("n", "<leader>v")
-nomap("n", "<leader>h")
+nomap("i", "<C-k>")
+nomap("i", "<C-l>")
+nomap("i", "<C-j>")
+nomap("i", "<C-h>")
 
--- nomap("n", "<C-k>")
+nomap("n", "<C-k>")
 
 Keymap.__index = Keymap
 function Keymap.new(mode, lhs, rhs, opts)
@@ -80,8 +73,8 @@ keymap(nxo, "gl", "g$", " move to end of line")
 
 keymap("x", "p", '"_dP', "don't yank on paste")
 
-keymap("n", "[q", vim.cmd.cprev, { desc = "Previous quickfix" })
-keymap("n", "]q", vim.cmd.cnext, { desc = "Next quickfix" })
+-- keymap("n", "[q", vim.cmd.cprev, { desc = "Previous quickfix" })
+-- keymap("n", "]q", vim.cmd.cnext, { desc = "Next quickfix" })
 
 -- select until the end of the line
 keymap("x", "v", "$h", "select until end")
