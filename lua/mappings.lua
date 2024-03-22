@@ -1,5 +1,16 @@
 require "nvchad.mappings"
 
+-- INFO: Disable mappings
+local nomap = vim.keymap.del
+
+-- nomap("i", "<C-k>")
+-- nomap("i", "<C-l>")
+-- nomap("i", "<C-j>")
+-- nomap("i", "<C-h>")
+nomap("n", "<leader>v")
+nomap("n", "<leader>h")
+-- nomap("n", "<C-k>")
+
 --  INFO: Utils
 local utils = require "utils.keymaps"
 local utils_buffer = require "utils.buffer"
@@ -10,28 +21,15 @@ local lkeymap = utils.set_leader_keymap
 local Telescope = require "utils.telescope"
 local Buffers = require "utils.buffer"
 
+maps.n["<leader><space>"] = { Telescope.find "files", desc = "Find files" }
 local Keymap = {}
-
---  INFO: Buffers
-lkeymap("wx", function()
-  Buffers.close_window()
-end, "Close window")
-
--- INFO: Disable mappings
-local nomap = vim.keymap.del
-
--- nomap("i", "<C-k>")
--- nomap("i", "<C-l>")
--- nomap("i", "<C-j>")
--- nomap("i", "<C-h>")
-nomap("n", "<leader>v")
-nomap("n", "<leader>h")
-
--- nomap("n", "<C-k>")
 
 Keymap.__index = Keymap
 function Keymap.new(mode, lhs, rhs, opts)
   local action = function()
+    if type(opts) == "string" then
+      opts = { desc = opts }
+    end
     local merged_opts = vim.tbl_extend("force", { noremap = true, silent = true }, opts or {})
     vim.keymap.set(mode, lhs, rhs, merged_opts)
   end
@@ -49,7 +47,41 @@ end
 
 vim.keymap.set({ "n", "x" }, "<Space>", "<Ignore>")
 
--- Search always center
+--  INFO: Buffers
+Keymap
+  .new("n", "<leader>wh", function()
+    return Buffers.hide_window(0)
+  end, "Hide window")
+  :bind(Keymap.new("n", "wx", function()
+    return Buffers.close_window()
+  end, "Close all windows but current"))
+  :bind(Keymap.new("n", "wX", function()
+    return Buffers.close_all_visible_window(false)
+  end, "Close all windows but current"))
+  :bind(Keymap.new("n", "<leader>bH", function()
+    Buffers.close_all_empty_buffers()
+  end, "Close hidden/empty buffers"))
+  :bind(Keymap.new("n", "<leader>bx", function()
+    Buffers.close_buffer(0, false)
+  end, "Close all buffers except current"))
+  :bind(Keymap.new("n", "<leader>bX", function()
+    Buffers.close_all_buffers(true, true)
+  end, "Close all buffers except current"))
+  :bind(Keymap.new("n", "<leader>bR", function()
+    Buffers.reset()
+  end, "Close all buf/win except current"))
+  -- :bind(Keymap.new())
+  --  TODO: 2024-02-15 13:25 PM - Implement this in the near
+  -- future
+  -- ["<leader>wV"] = {
+  --   function()
+  --     return Buffers.close_all_hidden_buffers()
+  --   end,
+  --   "Close all windows but current",
+  -- },
+  :execute()
+
+-- INFO: Search always center
 Keymap.new("n", "<C-u>", "zz<C-u>")
   :bind(Keymap.new("n", "<C-d>", "zz<C-d>"))
   :bind(Keymap.new("n", "{", "zz{"))
@@ -63,68 +95,68 @@ Keymap.new("n", "<C-u>", "zz<C-u>")
   :bind(Keymap.new("n", "#", "zz#"))
   :execute()
 
-keymap("n", "<C-a>", ": %y+<CR>", "COPY EVERYTHING/ALL")
-
--- keymap("n", "<C-s>", ":w!<CR>", "Save file")
-
-keymap("v", "/", '"fy/\\V<C-R>f<CR>')
-keymap("v", "*", '"fy/\\V<C-R>f<CR>')
+--  INFO: General
+Keymap
+  .new("n", "<leader>hh", "<cmd>nohl<cr>", "Clear highlight")
+  :bind(Keymap.new("n", "<leader>mm", "<cmd>messages<cr>"))
+  :bind(
+    Keymap.new("n", "<leader>oo", ':<C-u>call append(line("."),   repeat([""], v:count1))<CR>', "insert line below")
+  )
+  :bind(
+    Keymap.new("n", "<leader>OO", ':<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>', "insert line above")
+  )
+  :bind(Keymap.new("n", "<leader>L", "<cmd>Mason<CR>", "Mason"))
+  :bind(Keymap.new("n", "<leader>M", "<cmd>Lazy<CR>", "Lazy"))
+  :bind(Keymap.new("n", "<leader>zz", "<cmd>ZenMode<cr>", "Zen mode"))
+  :bind(Keymap.new("n", "<C-a>", ": %y+<CR>", "COPY EVERYTHING/ALL"))
+  :bind(Keymap.new("v", "/", '"fy/\\V<C-R>f<CR>'))
+  :bind(Keymap.new("v", "*", '"fy/\\V<C-R>f<CR>'))
+  :bind(Keymap.new("i", "<C-c>", "<esc>", "CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead."))
+  -- :bind(Keymap.new(nxo, "gh", "g^", " move to start of line"))
+  -- :bind(Keymap.new(nxo, "gl", "g$", " move to end of line"))
+  :bind(
+    Keymap.new("x", "p", '"_dP', "don't yank on paste")
+  )
+  :bind(Keymap.new("x", "v", "$h", "select until end"))
+  :bind(Keymap.new("x", "p", '"_dP', "don't yank on paste"))
+  -- :bind(Keymap.new({ "n", "x" }, "c", '"_c'))
+  -- :bind(Keymap.new({ "n", "x" }, "C", '"_C'))
+  -- :bind(Keymap.new({ "n", "x" }, "S", '"_S', "Don't save to register"))
+  -- :bind(Keymap.new({ "n", "x" }, "x", '"_x'))
+  :bind(
+    Keymap.new("x", "X", '"_c')
+  )
+  :bind(Keymap.new("i", "<C-l>", function()
+    return utils.escapePair()
+  end, "move over a closing element in insert mode"))
+  :bind(Keymap.new("n", "<M-l>", function()
+    return utils.escapePair()
+  end, "move over a closing element in normal mode"))
+  -- :bind(Keymap.new())
+  -- :bind(Keymap.new())
+  -- :bind(Keymap.new())
+  -- :bind(Keymap.new())
+  :execute()
 
 -- INFO: using:   "max397574/better-escape.nvim",
 -- keymap("i", "jj", "<ESC>", "Escape")
 
-keymap("i", "<C-c>", "<esc>", "CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.")
-
-keymap(nxo, "gh", "g^", " move to start of line")
-keymap(nxo, "gl", "g$", " move to end of line")
-
-keymap("x", "p", '"_dP', "don't yank on paste")
-
 keymap("n", "[q", vim.cmd.cprev, { desc = "Previous quickfix" })
 keymap("n", "]q", vim.cmd.cnext, { desc = "Next quickfix" })
-
--- select until the end of the line
-keymap("x", "v", "$h", "select until end")
-
-keymap("x", "p", '"_dP', "don't yank on paste")
-
--- Whatever you delete, make it go away
-keymap({ "n", "x" }, "c", '"_c')
-
-keymap({ "n", "x" }, "C", '"_C')
-keymap({ "n", "x" }, "S", '"_S', "Don't save to register")
-
-keymap({ "n", "x" }, "x", '"_x')
-keymap("x", "X", '"_c')
-
-keymap("n", "<ESC>", function()
-  vim.cmd "nohl"
-end, {
-  desc = "Clear highlight from search and close notifications",
-  silent = true,
-})
 
 -- better up/down
 -- INFO: don't know about this
 -- keymap({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 -- keymap({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
--- move over a closing element in insert mode
-keymap("i", "<C-l>", function()
-  return utils.escapePair()
-end, "move over a closing element in insert mode")
-
-keymap("n", "<M-l>", function()
-  return utils.escapePair()
-end, "move over a closing element in normal mode")
-
-keymap({ "n", "x" }, "*", "*N", "Search word or selection")
+--  INFO: 2024-03-21 15:42 PM - Disabled for now
+-- keymap({ "n", "x" }, "*", "*N", "Search word or selection")
 
 -- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 keymap("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next search result" })
+keymap("n", "N", "'nN'[v:searchforward].'zv'", { expr = true, desc = "Prev search result" })
 keymap("x", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next search result" })
 keymap("o", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next search result" })
-keymap("n", "N", "'nN'[v:searchforward].'zv'", { expr = true, desc = "Prev search result" })
 keymap("x", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result" })
 keymap("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result" })
 -- keymap(nxo, "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next search result" })
@@ -263,13 +295,6 @@ keymap({ "n", "x" }, "^", map_wrapped("^", "g^"), { expr = true })
 keymap({ "n", "x" }, "<Home>", map_wrapped("<Home>", "g<Home>"), { expr = true })
 keymap({ "n", "x" }, "<End>", map_wrapped_eol("<End>", "g<End>"), { expr = true })
 
--- maps.n["<leader>bc"] = {
---   function()
---     utils_buffer.close_buffer()
---   end,
---   desc = "Close buffer",
--- }
-
 maps.n["<leader>bsp"] = {
   function()
     utils_buffer.sort "full_path"
@@ -297,12 +322,5 @@ maps.n["<S-x>"] = {
   end,
   desc = "Force close buffer",
 }
-
--- maps.n["<leader>ff"] = {
---   function()
---     require("telescope.builtins").find_files()
---   end,
---   desc = "find files",
--- }
 
 utils.set_mappings(maps)

@@ -965,6 +965,13 @@ return {
         },
       }
     end,
+    keys = {
+      {
+        "<leader>dt",
+        "<cmd>TroubleToggle<cr>",
+        desc = "Trouble Toggle",
+      },
+    },
   },
   {
     "simonmclean/triptych.nvim",

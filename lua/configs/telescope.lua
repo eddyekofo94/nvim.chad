@@ -284,5 +284,15 @@ maps.x["<leader>*"] = {
   desc = "Grep String",
 }
 
+maps.n["<c-]>"] = {
+  Telescope.find("lsp_definitions", { jump_type = "vsplit", reuse_win = true }),
+  desc = "definition",
+}
+
+maps.n["<leader>dd"] = {
+  Telescope.find "diagnostics",
+  desc = "List diagnostics",
+}
+
 keymap_utils.set_mappings(maps)
 return options

@@ -35,12 +35,9 @@ end
 --   -- check_duplicates(modes, lhs, description)
 -- end
 
-function M.set_leader_keymap(input, output, options)
-  M.set_keymap("n", "<leader>" .. input, output, options)
-end
-
 function M.set_keymap(modes, input, output, opts)
-  local options = {}
+  -- local options = vim.tbl_deep_extend("force", { noremap = true, silent = true }, opts or {})
+  local options = { noremap = true, silent = true }
   local description = ""
 
   if type(opts) == "table" then
@@ -53,6 +50,10 @@ function M.set_keymap(modes, input, output, opts)
 
   vim.keymap.set(modes, input, output, options)
   check_duplicates(modes, input, description)
+end
+
+function M.set_leader_keymap(input, output, options)
+  M.set_keymap("n", "<leader>" .. input, output, options)
 end
 
 function M.set_buf_keymap(mode, key, rhs, opts)
