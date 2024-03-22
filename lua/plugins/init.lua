@@ -291,7 +291,7 @@ return {
   -- Better notifications and messagess
   {
     "folke/noice.nvim",
-    enabled = false,
+    enabled = true,
     event = "VeryLazy",
     opts = {
       hover = {
