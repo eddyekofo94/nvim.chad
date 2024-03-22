@@ -56,8 +56,17 @@ function M.set_leader_keymap(input, output, options)
   M.set_keymap("n", "<leader>" .. input, output, options)
 end
 
+function M.set_n_keymap(key, rhs, opts)
+  M.set_keymap("n", key, rhs, opts)
+end
+
 function M.set_buf_keymap(mode, key, rhs, opts)
-  vim.keymap.set(mode, key, rhs, { buffer = 0, opts })
+  local options = { buffer = 0, noremap = true, silent = true }
+  if type(opts) == "string" then
+    opts = { desc = opts }
+  end
+  options = vim.tbl_deep_extend("force", options, opts)
+  M.set_keymap(mode, key, rhs, options)
 end
 
 ---Set abbreviation that only expand when the trigger is at the position of
