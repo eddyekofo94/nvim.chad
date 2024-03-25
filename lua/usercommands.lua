@@ -7,7 +7,6 @@ create_cmd("BatchUpdate", function()
   }
   vim.cmd "MasonUpdate"
   vim.cmd "TSUpdate"
-  vim.cmd "NvChadUpdate"
   vim.cmd "Lazy update"
 end, {})
 
