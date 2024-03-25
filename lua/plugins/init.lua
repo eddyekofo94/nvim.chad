@@ -517,39 +517,18 @@ return {
     "lewis6991/gitsigns.nvim",
     event = "User FilePost",
     opts = function()
-      return require "nvchad.configs.gitsigns"
+      return require "configs.git_conf.gitsigns"
     end,
     config = function(_, opts)
       dofile(vim.g.base46_cache .. "git")
       require("gitsigns").setup(opts)
     end,
   },
-  -- {
-  --   "lewis6991/gitsigns.nvim",
-  --   enabled = vim.fn.executable "git" == 1,
-  --   opts = function()
-  --     local opts_gitsigns = default_others.gitsigns
-  --
-  --     opts_gitsigns = {
-  --       current_line_blame_formatter = " <author>:<author_time:%Y-%m-%d> - <summary>",
-  --       worktree = vim.g.git_worktree,
-  --     }
-  --
-  --     opts_gitsigns.signs = require("configs.git.gitsigns").gitsigns.signs
-  --
-  --     opts_gitsigns.on_attach = function(bufnr)
-  --       utils.load_mappings("gitsigns", { buffer = bufnr })
-  --       require "configs.git.gitsigns"
-  --     end
-  --
-  --     return opts_gitsigns
-  --   end,
-  -- },
   {
     "akinsho/git-conflict.nvim",
     event = "BufReadPre",
     config = function()
-      require "configs.git.git-conflict"
+      require "configs.git_conf.git-conflict"
     end,
   },
   {
@@ -592,7 +571,7 @@ return {
     "TimUntersberger/neogit",
     cmd = "Neogit",
     config = function()
-      require "configs.git.neogit"
+      require "configs.git_conf.neogit"
     end,
   },
 
@@ -755,7 +734,7 @@ return {
       "nvim-telescope/telescope.nvim",
     },
     config = function()
-      require "configs.git.git-worktree"
+      require "configs.git_conf.git-worktree"
     end,
   },
   {

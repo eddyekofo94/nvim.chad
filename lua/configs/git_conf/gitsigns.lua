@@ -1,5 +1,3 @@
-local maps = require("utils").empty_map_table()
-local utils = require "utils.keymaps"
 local map = require("utils.keymaps").set_buf_keymap
 
 local options = {
@@ -24,27 +22,6 @@ local options = {
 
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns
-
-    -- Navigation
-    -- map("n", "]c", function()
-    --   if vim.wo.diff then
-    --     return "]c"
-    --   end
-    --   vim.schedule(function()
-    --     gs.next_hunk()
-    --   end)
-    --   return "<Ignore>"
-    -- end, { expr = true })
-
-    -- map("n", "[c", function()
-    --   if vim.wo.diff then
-    --     return "[c"
-    --   end
-    --   vim.schedule(function()
-    --     gs.prev_hunk()
-    --   end)
-    --   return "<Ignore>"
-    -- end, { expr = true })
 
     map("n", "]x", function()
       if vim.wo.diff then
@@ -86,8 +63,6 @@ local options = {
       gs.diffthis "~"
     end, "Diff This ~")
     map({ "o", "x" }, "ih", "<cmd>C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
-
-    -- utils.set_mappings(maps)
   end,
 }
 
