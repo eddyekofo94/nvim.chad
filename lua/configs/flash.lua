@@ -1,7 +1,7 @@
 return {
   {
     "s",
-    mode = { "n", "o" },
+    mode = { "n", "o", "x" },
     function()
       require("flash").jump()
     end,
