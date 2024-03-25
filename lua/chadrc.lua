@@ -66,9 +66,6 @@ M.ui = {
   },
 }
 
--- M.plugins = "plugins"
--- M.mappings = require "mappings"
-
 -------------------------------------- snippets ------------------------------------------
 vim.g.lua_snippets_path = vim.fn.stdpath "config" .. "/lua/snippets"
 
