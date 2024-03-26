@@ -90,11 +90,6 @@ M.focus = {
     desc = "Split Right",
   },
   {
-    "<leader>tn",
-    "<cmd>FocusSplitNicely cmd term<cr>",
-    desc = "Terminal Nicely",
-  },
-  {
     "<leader>vv",
     "<cmd>FocusSplitNicely<cr>",
     desc = "Split Nicely",
@@ -133,6 +128,11 @@ maps.n["<leader>ww"] = {
 maps.n["<leader>vr"] = {
   "<cmd>FocusSplitRight<cr>",
   desc = "Split Right",
+}
+
+maps.n["<leader>tn"] = {
+  "<cmd>FocusSplitNicely cmd term<cr>",
+  desc = "Terminal Nicely",
 }
 
 maps.n["<leader>vd"] = {
