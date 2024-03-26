@@ -45,8 +45,8 @@ local options = {
       end)
       return "<Ignore>"
     end, opts "Jump to prev hunk")
-    map({ "n", "v" }, "<leader>gg", "<cmd>Gitsigns stage_hunk<CR>", opts "Stage Hunk")
-    map({ "n", "v" }, "<leader>gx", "<cmd>Gitsigns reset_hunk<CR>", opts "Reset Hunk")
+    map({ "n", "v" }, "<leader>gg", "<cmd>Gitsigns stage_hunk<CR>", "Stage Hunk")
+    map({ "n", "v" }, "<leader>gx", "<cmd>Gitsigns reset_hunk<CR>", "Reset Hunk")
     map("n", "<leader>gG", gs.stage_buffer, opts "Stage Buffer")
     map("n", "<leader>gu", gs.undo_stage_hunk, opts "Undo Stage Hunk")
     map("n", "<leader>gX", gs.reset_buffer, opts "Reset Buffer")
