@@ -7,6 +7,11 @@ local root_patterns, get_root = fs.root_patterns, fs.get_root
 -- Process creation is expensive in Windows, so this reduces latency
 local is_inside_work_tree = {}
 
+local function is_git_repo()
+  vim.fn.system "git rev-parse --is-inside-work-tree"
+
+  return vim.v.shell_error == 0
+end
 local function live_grep_from_project_git_root()
   local function is_git_repo()
     vim.fn.system "git rev-parse --is-inside-work-tree"
@@ -49,20 +54,23 @@ end
 M.project_files = function(opts)
   -- local opts = {} -- define here if you want to define something
   local builtin = require "telescope.builtin"
+  local current = vim.api.nvim_get_current_win()
 
-  local cwd = vim.fn.getcwd()
+  local cwd = (opts.cwd or vim.uv.cwd())
   if is_inside_work_tree[cwd] == nil then
     vim.fn.system "git rev-parse --is-inside-work-tree"
     is_inside_work_tree[cwd] = vim.v.shell_error == 0
   end
 
-  if is_inside_work_tree[cwd] then
+  if not is_inside_work_tree[cwd] then
+    -- if vim.uv.fs_stat((opts.cwd or vim.uv.cwd()) .. "/.git") then -- info: working
     opts.show_untracked = true
     opts.no_ignore = false
     builtin.git_files(opts)
   else
     builtin.find_files(opts)
   end
+  return builtin
 end
 
 M.send_to_harpoon_action = function(prompt_bufnr)
