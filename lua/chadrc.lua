@@ -14,6 +14,46 @@ M.ui = {
   },
   extended_integrations = { "trouble", "dap", "notify", "todo" },
   statusline = {
+    theme = "vscode", -- default/vscode/vscode_colored/minimal
+    order = {
+      "mode",
+      "file",
+      "search_count",
+      "diagnostics",
+      "git",
+      "macro",
+      "%=",
+      "lsp_msg",
+      "%=",
+      "lsp",
+      "cursor",
+      "line_percentage",
+      "cwd",
+    },
+    modules = {
+      file = function()
+        return statusline.file_info()
+      end,
+      search_count = function()
+        return statusline.search_count()
+      end,
+      lsp_msg = function()
+        return statusline.lsp_progress()
+        -- return statusline.lsp_msg()
+      end,
+      diagnostics = function()
+        return statusline.LSP_Diagnostics()
+      end,
+      macro = function()
+        return statusline.macro()
+      end,
+      line_percentage = function()
+        return statusline.line_percentage()
+      end,
+      cwd = function()
+        return statusline.cwd()
+      end,
+    },
     overriden_modules = function(modules)
       -- adding a module between 2 modules
       -- Use the table.insert function to insert at specific index

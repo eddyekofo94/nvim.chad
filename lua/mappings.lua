@@ -104,7 +104,18 @@ Keymap.new("n", "<C-u>", "zz<C-u>")
 
 --  INFO: General
 Keymap
-  .new("n", "<leader>hh", "<cmd>nohl<cr>", "Clear highlight")
+  .new("n", "<leader>hh", "<cmd>nohl<BAR>redraws<cr>", "Clear highlight")
+  :bind(
+    -- Clear search, diff update and redraw
+    -- taken from runtime/lua/_editor.lua
+    Keymap.new(
+      "n",
+      "<leader>ur",
+      "<Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>",
+      { desc = "Redraw / clear hlsearch / diff update" }
+    )
+  )
+  :bind(Keymap.new({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", "Escape and clear hlsearch"))
   :bind(Keymap.new("n", "<leader>mm", "<cmd>messages<cr>"))
   :bind(
     Keymap.new("n", "<leader>oo", ':<C-u>call append(line("."),   repeat([""], v:count1))<CR>', "insert line below")
