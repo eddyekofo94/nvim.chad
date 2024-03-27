@@ -188,6 +188,7 @@ return {
       { "lukas-reineke/cmp-rg" },
       { "hrsh7th/cmp-buffer" }, -- Optional
       { "hrsh7th/cmp-cmdline" },
+      { "ray-x/cmp-treesitter" },
       { "dmitmel/cmp-cmdline-history" },
       {
         "tzachar/cmp-fuzzy-path",
@@ -958,6 +959,9 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim", -- required
       "nvim-tree/nvim-web-devicons", -- optional
+    },
+    keys = {
+      { "<leader>-", "<cmd>Triptych<CR>", desc = "File explorere [Triptych]" },
     },
     config = function()
       require "configs.triptych"
