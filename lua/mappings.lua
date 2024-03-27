@@ -9,14 +9,13 @@ nomap("i", "<C-j>")
 nomap("i", "<C-h>")
 
 nomap("n", "<leader>b")
+nomap("n", "<c-s>")
 nomap("n", "<leader>x")
 nomap("n", "<tab>")
 nomap("n", "<S-tab>")
-nomap("n", "<C-k>")
 nomap("n", "<C-c>")
 nomap("n", "<leader>v")
 nomap("n", "<leader>h")
--- nomap("n", "<C-k>")
 
 --  INFO: Utils
 local utils = require "utils.keymaps"
@@ -25,10 +24,9 @@ local keymap = utils.set_keymap
 local nxo = utils.nxo
 local maps = require("utils").empty_map_table()
 local lkeymap = utils.set_leader_keymap
-local Telescope = require "utils.telescope"
+-- local Telescope = require "utils.telescope"
 local Buffers = require "utils.buffer"
 
-maps.n["<leader><space>"] = { Telescope.find "files", desc = "Find files" }
 local Keymap = {}
 
 Keymap.__index = Keymap
@@ -115,7 +113,7 @@ Keymap
       { desc = "Redraw / clear hlsearch / diff update" }
     )
   )
-  :bind(Keymap.new({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", "Escape and clear hlsearch"))
+  :bind(Keymap.new({ "i", "n" }, "<esc>", "<cmd>noh<bar>redraws<cr><esc>", "Escape and clear hlsearch"))
   :bind(Keymap.new("n", "<leader>mm", "<cmd>messages<cr>"))
   :bind(
     Keymap.new("n", "<leader>oo", ':<C-u>call append(line("."),   repeat([""], v:count1))<CR>', "insert line below")
@@ -173,6 +171,18 @@ Keymap
 -- keymap("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result" })
 -- keymap(nxo, "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next search result" })
 -- keymap(nxo, "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev search result" })
+
+-- if vim.lsp.buf.inlay_hint or vim.lsp.inlay_hint then
+--   keymap("n", "<leader>uh", function()
+--     LazyVim.toggle.inlay_hints()
+--   end, { desc = "Toggle Inlay Hints" })
+-- end
+
+-- highlights under cursor
+-- Keymap("n", "<leader>ui", vim.show_pos, { desc = "Inspect Pos" })
+
+-- quit
+keymap("n", "<leader>qq", "<cmd>qa<cr>", "Quit all")
 
 keymap("n", "i", function()
   if #vim.fn.getline "." == 0 then
