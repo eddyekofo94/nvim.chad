@@ -572,8 +572,13 @@ return {
     end,
   },
   {
-    "TimUntersberger/neogit",
+    "NeogitOrg/neogit",
+    branch = "nightly",
+    event = "VeryLazy",
     cmd = "Neogit",
+    dependencies = {
+      "sindrets/diffview.nvim",
+    },
     config = function()
       require "configs.git_conf.neogit"
     end,
