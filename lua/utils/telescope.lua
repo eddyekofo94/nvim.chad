@@ -53,9 +53,6 @@ function M.find(builtin, opts)
     if builtin:match "file" then
       return TelescopePickers.pretty_files_picker(builtin, opts)
     end
-    if builtin == "git_status" then
-      return TelescopePickers.pretty_git_picker(opts)
-    end
     if builtin == "buffers" then
       return TelescopePickers.pretty_buffers_picker(opts)
     end

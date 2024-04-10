@@ -19,11 +19,7 @@ M.has_words_before = function()
     return false
   end
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0
-    and vim.api
-        .nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]
-        :match "^%s*$"
-      == nil
+  return col ~= 0 and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match "^%s*$" == nil
 end
 
 M.check_backspace = function()
@@ -68,33 +64,22 @@ M.format = function(entry, vim_item)
     symbol_map = source_mapping,
   }(entry, vim_item)
 
-  item_with_kind.kind =
-    lspkind.symbolic(item_with_kind.kind, { with_text = true })
+  item_with_kind.kind = lspkind.symbolic(item_with_kind.kind, { with_text = true })
   item_with_kind.menu = source_mapping[entry.source.name]
   item_with_kind.menu = vim.trim(item_with_kind.menu or "")
-  item_with_kind.abbr =
-    string.sub(item_with_kind.abbr, 1, item_with_kind.maxwidth)
+  item_with_kind.abbr = string.sub(item_with_kind.abbr, 1, item_with_kind.maxwidth)
 
   if entry.source.name == "cmp_tabnine" then
-    if
-      entry.completion_item.data ~= nil
-      and entry.completion_item.data.detail ~= nil
-    then
-      item_with_kind.kind = " "
-        .. lspkind.symbolic("Event", { with_text = false })
-        .. " TabNine"
-      item_with_kind.menu = item_with_kind.menu
-        .. entry.completion_item.data.detail
+    if entry.completion_item.data ~= nil and entry.completion_item.data.detail ~= nil then
+      item_with_kind.kind = " " .. lspkind.symbolic("Event", { with_text = false }) .. " TabNine"
+      item_with_kind.menu = item_with_kind.menu .. entry.completion_item.data.detail
     else
-      item_with_kind.kind = " "
-        .. lspkind.symbolic("Event", { with_text = false })
-        .. " TabNine"
+      item_with_kind.kind = " " .. lspkind.symbolic("Event", { with_text = false }) .. " TabNine"
       item_with_kind.menu = item_with_kind.menu .. " TBN"
     end
   end
 
-  local completion_context =
-    get_lsp_completion_context(entry.completion_item, entry.source)
+  local completion_context = get_lsp_completion_context(entry.completion_item, entry.source)
   if completion_context ~= nil and completion_context ~= "" then
     item_with_kind.menu = item_with_kind.menu .. [[ -> ]] .. completion_context
   end
@@ -103,8 +88,7 @@ M.format = function(entry, vim_item)
     -- Override for plugin purposes
     vim_item.kind = "Color"
     local tailwind_item = require("cmp-tailwind-colors").format(entry, vim_item)
-    item_with_kind.menu = lspkind.symbolic("Color", { with_text = false })
-      .. " Color"
+    item_with_kind.menu = lspkind.symbolic("Color", { with_text = false }) .. " Color"
     item_with_kind.kind = " " .. tailwind_item.kind
   end
 
@@ -224,10 +208,7 @@ function M.limit_lsp_types(entry, ctx)
       return false
     end
   elseif string.match(line, "^%s+%w+$") then
-    if
-      kind == types.lsp.CompletionItemKind.Function
-      or kind == types.lsp.CompletionItemKind.Variable
-    then
+    if kind == types.lsp.CompletionItemKind.Function or kind == types.lsp.CompletionItemKind.Variable then
       return true
     else
       return false

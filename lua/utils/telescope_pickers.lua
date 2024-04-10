@@ -116,53 +116,6 @@ function telescope_pickers.pretty_buffers_picker(localOptions)
   require("telescope.builtin").buffers(options)
 end
 
-function telescope_pickers.pretty_git_picker(localOptions)
-  if localOptions ~= nil and type(localOptions) ~= "table" then
-    print "Options must be a table."
-    return
-  end
-
-  local options = localOptions or {}
-
-  local original_entry_maker = telescope_make_entry_module.gen_from_git_stash(options)
-
-  options.entry_maker = function(line)
-    local original_entry_table = original_entry_maker(line)
-
-    local displayer = telescope_entry_display_module.create {
-      separator = " ",
-      items = {
-        { width = 10 },
-        { width = 15 } or "",
-        { remaining = true },
-        -- { width = 10 },
-        -- { width = fileTypeIconWidth },
-        -- { remaining = true },
-      },
-    }
-
-    original_entry_table.display = function(entry)
-      local tail, path = telescope_pickers.get_path_and_tail(entry.filename)
-      local tailForDisplay = tail .. " "
-      local icon, iconHighlight = telescope_utils.get_devicons(tail)
-
-      return displayer {
-        -- { entry.value, "TelescopeResultsLineNr" },
-        entry.commit_info,
-        tailForDisplay,
-        { entry.branch_name, "TelescopeResultsIdentifier" } or "",
-        -- entry.commit_info,
-        -- tailForDisplay,
-        -- { path, "TelescopeResultsComment" },
-      }
-    end
-
-    return original_entry_table
-  end
-
-  require("telescope.builtin").git_status(options)
-end
-
 function telescope_pickers.longPath(gen)
   local options = {}
 

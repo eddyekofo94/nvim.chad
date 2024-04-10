@@ -43,6 +43,12 @@ return {
   GitStaged = "✓",
   GitUnstaged = "✗",
   GitUntracked = "★",
+  GitSignAdd          = '▍ ',
+  GitSignChange       = '▍ ',
+  GitSignChangedelete = '▍ ',
+  GitSignDelete       = '▁ ',
+  GitSignTopdelete    = '▔ ',
+  GitSignUntracked    = '▍ ',
   LSPLoaded = "", -- TODO: Remove unused icon in AstroNvim v4
   LSPLoading1 = "",
   LSPLoading2 = "󰀚",

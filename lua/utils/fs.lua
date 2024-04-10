@@ -1,6 +1,6 @@
 local M = {}
 
-local utils = require "utils"
+local utils = require "utils.general"
 local get_icon = require "utils.static.icons"
 
 M.root_patterns = {
@@ -68,10 +68,7 @@ function git.cmd(args, ...)
   if type(args) == "string" then
     args = { args }
   end
-  return require("utils").cmd(
-    vim.list_extend({ "git", "-C", NVIM_PATH }, args),
-    ...
-  )
+  return utils.cmd(vim.list_extend({ "git", "-C", NVIM_PATH }, args), ...)
 end
 
 --- Check if the AstroNvim home is a git repo
@@ -184,15 +181,12 @@ end
 
 function M.is_new_file()
   local filename = vim.fn.expand "%"
-  return filename ~= ""
-    and vim.bo.buftype == ""
-    and vim.fn.filereadable(filename) == 0
+  return filename ~= "" and vim.bo.buftype == "" and vim.fn.filereadable(filename) == 0
 end
 
 -- Get unique name for the current buffer
 function M.get_unique_filename(filename, shorten)
-  local get_current_filenames =
-    require("utils.buffer").get_current_filenames
+  local get_current_filenames = require("utils.buffer").get_current_filenames
 
   local filenames = vim.tbl_filter(function(filename_other)
     return filename_other ~= filename
@@ -315,9 +309,7 @@ function M.unique_path(opts)
       (
         opts.max_length > 0
         and #unique_path > opts.max_length
-        and string.sub(unique_path, 1, opts.max_length - 2)
-          .. get_icon "Ellipsis"
-          .. "/"
+        and string.sub(unique_path, 1, opts.max_length - 2) .. get_icon "Ellipsis" .. "/"
       ) or unique_path,
       opts
     )

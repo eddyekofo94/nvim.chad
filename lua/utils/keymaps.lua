@@ -253,4 +253,30 @@ function M.set_mappings(map_table, base)
   end -- if which-key is loaded already, register
 end
 
+--- Register queued which-key mappings
+function M.which_key_register()
+  if M.which_key_queue then
+    local wk_avail, wk = pcall(require, "which-key")
+    if wk_avail then
+      for mode, registration in pairs(M.which_key_queue) do
+        wk.register(registration, { mode = mode })
+      end
+      M.which_key_queue = nil
+    end
+  end
+end
+
+function M.empty_map_table()
+  local maps = {}
+  for _, mode in ipairs { "", "n", "v", "x", "s", "o", "!", "i", "l", "c", "t", "leader" } do
+    maps[mode] = {}
+  end
+  if vim.fn.has "nvim-0.10.0" == 1 then
+    for _, abbr_mode in ipairs { "ia", "ca", "!a" } do
+      maps[abbr_mode] = {}
+    end
+  end
+  return maps
+end
+
 return M
