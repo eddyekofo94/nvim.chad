@@ -1,8 +1,12 @@
 local actions = require "telescope.actions"
 local Util = require "utils.telescope"
 local themes = require "telescope.themes"
-local maps = require("utils").empty_map_table()
+
+local utils = require "utils"
+local maps = utils.keymaps:empty_map_table()
+
 local Telescope = require "utils.telescope"
+local TelescopePickers = require "utils.telescope_pickers"
 local keymap_utils = require "utils.keymaps"
 
 local options = {
@@ -48,6 +52,7 @@ local options = {
         --@usage don't include the filename in the search results
         only_sort_text = true,
       },
+      -- live_grep = TelescopePickers.live_grep,
       grep_string = {
         only_sort_text = true,
       },
@@ -222,6 +227,7 @@ maps.n["<leader>s."] = {
   desc = "[Cur] Live grep",
 }
 maps.n["<leader>sx"] = { Telescope.find "git_status", desc = "Open changed file" }
+
 maps.n["<leader>bb"] = {
   Telescope.find("buffers", { cwd = false }),
   desc = "[All] List buffers",
@@ -266,6 +272,7 @@ maps.n["<leader>:"] = {
   Telescope.find "command_history",
   desc = "Old files",
 }
+
 maps.n["<leader>s*"] = {
   Telescope.find "grep_string",
   desc = "Grep String [Root]",
@@ -284,6 +291,16 @@ maps.x["<leader>*"] = {
   desc = "Grep String",
 }
 
+maps.n["<leader>lO"] = {
+  TelescopePickers.lsp_outgoing_calls(),
+  desc = "Inc calls",
+}
+
+maps.n["<leader>sI"] = {
+  TelescopePickers.lsp_incoming_calls(),
+  desc = "Inc calls",
+}
+
 maps.n["<c-]>"] = {
   Telescope.find("lsp_definitions", { jump_type = "vsplit", reuse_win = true }),
   desc = "definition",
@@ -292,6 +309,18 @@ maps.n["<c-]>"] = {
 maps.n["<leader>dd"] = {
   Telescope.find "diagnostics",
   desc = "List diagnostics",
+}
+
+maps.n["<leader>sc"] = {
+  Telescope.config_files(),
+  desc = "Search Configs",
+}
+
+maps.n["<leader>sL"] = {
+  function()
+    require("telescope.builtin").find_files { cwd = require("lazy.core.config").options.root }
+  end,
+  desc = "[Lazy] Find Plugin File",
 }
 
 keymap_utils.set_mappings(maps)

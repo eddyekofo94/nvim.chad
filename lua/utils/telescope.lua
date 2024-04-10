@@ -1,7 +1,8 @@
 local M = {}
 
-local fs = require "utils.fs"
-local root_patterns, get_root = fs.root_patterns, fs.get_root
+local utils_fs = require "utils.fs"
+local get_root = utils_fs.get_root
+local TelescopePickers = require "utils.telescope_pickers"
 
 -- We cache the results of "git rev-parse"
 -- Process creation is expensive in Windows, so this reduces latency
@@ -12,6 +13,7 @@ local function is_git_repo()
 
   return vim.v.shell_error == 0
 end
+
 local function live_grep_from_project_git_root()
   local function is_git_repo()
     vim.fn.system "git rev-parse --is-inside-work-tree"
@@ -47,14 +49,46 @@ function M.find(builtin, opts)
     if builtin == "files" then
       return M.project_files(opts)
     end
+
+    if builtin:match "file" then
+      return TelescopePickers.pretty_files_picker(builtin, opts)
+    end
+    if builtin == "git_status" then
+      return TelescopePickers.pretty_git_picker(opts)
+    end
+    if builtin == "buffers" then
+      return TelescopePickers.pretty_buffers_picker(opts)
+    end
+    if builtin == "live_grep" then
+      return TelescopePickers.live_grep(opts)
+    end
+    if builtin == "grep_string" then
+      return TelescopePickers.grep_string(opts)
+    end
+
+    if opts.cwd and opts.cwd ~= vim.uv.cwd() then
+      local function open_cwd_dir()
+        local action_state = require "telescope.actions.state"
+        local line = action_state.get_current_line()
+        M.find(
+          params.builtin,
+          vim.tbl_deep_extend("force", {}, params.opts or {}, { cwd = false, default_text = line })
+        )()
+      end
+      ---@diagnostic disable-next-line: inject-field
+      opts.attach_mappings = function(_, map)
+        -- opts.desc is overridden by telescope, until it's changed there is this fix
+        map("i", "<a-c>", open_cwd_dir, { desc = "Open cwd directory" })
+        return true
+      end
+    end
+
     require("telescope.builtin")[builtin](opts)
   end
 end
 
 M.project_files = function(opts)
-  -- local opts = {} -- define here if you want to define something
   local builtin = require "telescope.builtin"
-  local current = vim.api.nvim_get_current_win()
 
   local cwd = (opts.cwd or vim.uv.cwd())
   if is_inside_work_tree[cwd] == nil then
@@ -62,13 +96,13 @@ M.project_files = function(opts)
     is_inside_work_tree[cwd] = vim.v.shell_error == 0
   end
 
-  if not is_inside_work_tree[cwd] then
-    -- if vim.uv.fs_stat((opts.cwd or vim.uv.cwd()) .. "/.git") then -- info: working
+  -- if not is_inside_work_tree[cwd] then
+  if vim.uv.fs_stat(cwd .. "/.git") then
     opts.show_untracked = true
     opts.no_ignore = false
-    builtin.git_files(opts)
+    builtin = TelescopePickers.pretty_files_picker("git_files", opts)
   else
-    builtin.find_files(opts)
+    builtin = TelescopePickers.pretty_files_picker("find_files", opts)
   end
   return builtin
 end
@@ -90,6 +124,10 @@ M.send_to_harpoon_action = function(prompt_bufnr)
   for _, entry in ipairs(picker:get_multi_selection()) do
     mark.add_file(entry[1])
   end
+end
+
+function M.config_files()
+  return M.find("find_files", { cwd = vim.fn.stdpath "config" })
 end
 
 return M
