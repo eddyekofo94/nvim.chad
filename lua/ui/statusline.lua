@@ -1,4 +1,5 @@
 _G.statusline = {}
+
 local fs = require "utils.fs"
 local options = {
   diagnostics = {
@@ -60,14 +61,10 @@ function statusline.lsp_progress()
 end
 
 function statusline.LSP_Diagnostics()
-  local errors =
-    #vim.diagnostic.get(stbufnr(), { severity = vim.diagnostic.severity.ERROR })
-  local warnings =
-    #vim.diagnostic.get(stbufnr(), { severity = vim.diagnostic.severity.WARN })
-  local hints =
-    #vim.diagnostic.get(stbufnr(), { severity = vim.diagnostic.severity.HINT })
-  local info =
-    #vim.diagnostic.get(stbufnr(), { severity = vim.diagnostic.severity.INFO })
+  local errors = #vim.diagnostic.get(stbufnr(), { severity = vim.diagnostic.severity.ERROR })
+  local warnings = #vim.diagnostic.get(stbufnr(), { severity = vim.diagnostic.severity.WARN })
+  local hints = #vim.diagnostic.get(stbufnr(), { severity = vim.diagnostic.severity.HINT })
+  local info = #vim.diagnostic.get(stbufnr(), { severity = vim.diagnostic.severity.INFO })
 
   errors = (errors and errors > 0) and ("󰅚 " .. errors .. " ") or ""
   warnings = (warnings and warnings > 0) and (" " .. warnings .. " ") or ""
@@ -85,12 +82,40 @@ function statusline.line_percentage()
   local lines = vim.api.nvim_buf_line_count(0)
 
   if curr_line == 1 then
-    return "Top"
+    return "Top "
   elseif curr_line == lines then
-    return "Bot"
+    return "Bot "
   else
-    return string.format("%2d%%%%", math.ceil(curr_line / lines * 99))
+    return string.format("%2d%%%% ", math.ceil(curr_line / lines * 99))
   end
+end
+
+statusline.lsp_msg = function()
+  if not rawget(vim, "lsp") or vim.lsp.status or not is_activewin() then
+    return ""
+  end
+
+  local Lsp = vim.lsp.status()
+
+  if vim.o.columns < 120 or not Lsp then
+    return ""
+  end
+
+  if Lsp.done then
+    vim.defer_fn(function()
+      vim.cmd.redrawstatus()
+    end, 1000)
+  end
+
+  local msg = Lsp.message or ""
+  local percentage = Lsp.percentage or 0
+  local title = Lsp.title or ""
+  local spinners = { "", "󰪞", "󰪟", "󰪠", "󰪢", "󰪣", "󰪤", "󰪥" }
+  local ms = vim.loop.hrtime() / 1000000
+  local frame = math.floor(ms / 120) % #spinners
+  local content = string.format(" %%<%s %s %s (%s%%%%) ", spinners[frame + 1], title, msg, percentage)
+
+  return content or ""
 end
 
 function statusline.search_count()
@@ -104,11 +129,7 @@ function statusline.search_count()
     return ""
   end
 
-  return string.format(
-    "[%d/%d] ",
-    result.current,
-    math.min(result.total, result.maxcount)
-  )
+  return string.format("[%d/%d] ", result.current, math.min(result.total, result.maxcount))
 end
 
 function statusline.file_info()
@@ -133,8 +154,7 @@ function statusline.file_info()
     local windwidth = vim.go.columns or vim.fn.winwidth(0)
     local estimated_space_available = windwidth - options.shorting_target
 
-    filename =
-      fs.shorten_path(filename, path_separator, estimated_space_available)
+    filename = fs.shorten_path(filename, path_separator, estimated_space_available)
   end
 
   if options.newfile_status and fs.is_new_file() then
@@ -150,16 +170,21 @@ function statusline.macro()
   if recording_register == "" then
     return ""
   else
-    return "Recording @" .. recording_register .. " "
+    return " Recording @" .. recording_register .. " "
   end
 end
 
 function statusline.cwd()
-  local dir_name = "%#St_Mode# 󰉖 "
-    -- .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-    .. fs.shorten_path(fs.get_root(), "/", 0)
-    .. " "
-  return (vim.o.columns > 85 and dir_name) or ""
+  local icon = " 󰉋  "
+  local name = fs.shorten_path(fs.get_root(), "/", 0)
+  name = (name:match "([^/\\]+)[/\\]*$" or name) .. " "
+
+  return (vim.o.columns > 85 and ("%#st_mode#" .. icon .. name)) or ""
+  -- local dir_name = "%#St_Mode# 󰉖 "
+  -- .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+  -- .. fs.shorten_path(fs.get_root(), "/", 0)
+  -- .. " "
+  -- return (vim.o.columns > 85 and dir_name) or ""
 end
 
 return statusline

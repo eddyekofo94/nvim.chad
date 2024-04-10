@@ -19,3 +19,20 @@ vim.api.nvim_create_user_command("DiagnosticsToggle", function()
     vim.diagnostic.disable()
   end
 end, {})
+
+-- accidental write buffer commands in capital case
+vim.api.nvim_create_user_command("Wa", "wa", {
+  desc = "Alias for :wa (write all buffers)",
+})
+
+vim.api.nvim_create_user_command("WA", "wa", {
+  desc = "Alias for :wa (write all buffers)",
+})
+
+vim.api.nvim_create_user_command("Xa", "xa", {
+  desc = "Alias for :xa (write & close all buffers)",
+})
+
+vim.api.nvim_create_user_command("W", "w", {
+  desc = "Alias for :w (write current buffer)",
+})

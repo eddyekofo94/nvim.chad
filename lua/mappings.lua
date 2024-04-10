@@ -23,8 +23,8 @@ local utils_buffer = require "utils.buffer"
 local keymap = utils.set_keymap
 local nxo = utils.nxo
 local maps = require("utils").keymaps:empty_map_table()
-local lkeymap = utils.set_leader_keymap
 -- local Telescope = require "utils.telescope"
+local TelescopePickers = require "utils.telescope_pickers"
 local Buffers = require "utils.buffer"
 
 local Keymap = {}

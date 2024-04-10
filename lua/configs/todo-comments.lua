@@ -1,3 +1,6 @@
+dofile(vim.g.base46_cache .. "todo")
+local keymap = require("utils.keymaps").set_keymap
+
 local opts = {
   -- your configuration comes here
   -- or leave it empty to use the default settings
@@ -28,4 +31,5 @@ local opts = {
   },
 }
 
+keymap("n", "T", "<cmd>TodoTelescope<cr>", "Search TODO")
 return opts

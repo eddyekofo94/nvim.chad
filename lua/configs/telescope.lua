@@ -208,6 +208,7 @@ maps.n["<leader>p"] = {
   Telescope.find("files", { cwd = "%:p:h" }),
   desc = "Find files current dir",
 }
+
 maps.n["<leader>sa"] = {
   Telescope.find("files", { follow = true, no_ignore = true, hidden = true }),
   desc = "Find all",
@@ -222,36 +223,45 @@ maps.n["<leader>ss"] = {
   Telescope.find "live_grep",
   desc = "[Root] Live grep",
 }
+
 maps.n["<leader>s."] = {
   Telescope.find("live_grep", { cwd = "%:p:h" }),
   desc = "[Cur] Live grep",
 }
+
 maps.n["<leader>sx"] = { Telescope.find "git_status", desc = "Open changed file" }
 
 maps.n["<leader>bb"] = {
   Telescope.find("buffers", { cwd = false }),
   desc = "[All] List buffers",
 }
+
 maps.n["<leader>s,"] = {
   "<cmd>Telescope frecency<cr>",
   desc = "[Root] Frecency",
 }
+
 maps.n["<leader>sb"] = {
   Telescope.find "buffers",
   desc = "[Root] List buffers",
 }
+
 maps.n["<leader>sh"] = { "<cmd> Telescope harpoon marks<CR>", desc = "Harpoon files" }
+
 maps.n["<leader>sk"] = { Telescope.find "keymaps", desc = "Keymaps" }
+
 maps.n["<leader>so"] = {
   Telescope.find "oldfiles",
   desc = "Find oldfiles",
 }
+
 maps.n["<leader>sw"] = {
   function()
     require("telescope").extensions.windows.list()
   end,
   desc = "Find windows",
 }
+
 maps.n["<leader>sO"] = {
   Telescope.find("oldfiles", { cwd = false }),
   desc = "[Root] Find oldfiles",

@@ -3,20 +3,12 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      -- require("nvchad.configs.lspconfig").defaults()
+      require("utils.lsp.lspconfig").defaults()
+      require "configs.lspconfig"
+    end,
     dependencies = {
-      {
-        "dgagn/diagflow.nvim",
-        event = "LspAttach",
-        enabled = true,
-        config = function()
-          require("diagflow").setup {
-            placement = "top",
-            text_align = "left", -- 'left', 'right'
-            show_sign = true, -- set to true if you want to render the diagnostic sign before the diagnostic message
-            scope = "cursor", -- 'cursor', 'line' this changes the scope, so instead of showing errors under the cursor, it shows errors on the entire line.
-          }
-        end,
-      },
       {
         "deathbeam/lspecho.nvim",
         enabled = false,
@@ -71,18 +63,27 @@ return {
       },
       {
         "folke/neodev.nvim",
-        config = function()
-          require("neodev").setup {
-            library = { plugins = { "nvim-dap-ui" }, types = true },
-          }
-        end,
-        lazy = true,
+        lazy = false,
         ft = "lua",
       },
     },
+  },
+  {
+    "dgagn/diagflow.nvim",
+    event = "LspAttach",
+    enabled = true,
     config = function()
-      require("nvchad.configs.lspconfig").defaults()
-      require "configs.lsp.lspconfig"
+      require("diagflow").setup {
+        toggle_event = { "InsertLeave" },
+        enable = function()
+          return vim.bo.filetype ~= "lazy"
+        end,
+        inline_padding_left = 5,
+        placement = "top", -- inline
+        text_align = "right", -- 'left', 'right'
+        show_sign = true, -- set to true if you want to render the diagnostic sign before the diagnostic message
+        scope = "cursor", -- 'cursor', 'line' this changes the scope, so instead of showing errors under the cursor, it shows errors on the entire line.
+      }
     end,
   },
   {
@@ -292,7 +293,7 @@ return {
   -- Better notifications and messagess
   {
     "folke/noice.nvim",
-    enabled = true,
+    enabled = false,
     event = "VeryLazy",
     opts = {
       hover = {
@@ -397,6 +398,12 @@ return {
   },
   {
     "williamboman/mason.nvim",
+    dependencies = {
+      "williamboman/mason-lspconfig.nvim",
+    },
+    config = function()
+      require "configs.lsp.mason"
+    end,
     opts = {
       ensure_installed = {
         "lua-language-server",
@@ -531,13 +538,23 @@ return {
   {
     "akinsho/git-conflict.nvim",
     event = "BufReadPre",
+    cmd = "GitConflictRefresh",
     config = function()
       require "configs.git_conf.git-conflict"
     end,
   },
   {
     "sindrets/diffview.nvim",
+    opts = {
+      use_icons = false,
+      enhanced_diff_hl = true,
+      default_args = {
+        DiffviewOpen = { "--untracked-files=no" },
+        DiffviewFileHistory = { "--base=LOCAL" },
+      },
+    },
     cmd = {
+      "DiffviewFileHistory",
       "DiffviewOpen",
       "DiffviewClose",
       "DiffviewToggleFiles",
@@ -614,6 +631,14 @@ return {
     end,
   },
   {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      disable = { filetypes = { "TelescopePrompt" } },
+    },
+    config = require "configs.which-key",
+  },
+  {
     "ahmedkhalf/project.nvim",
     -- can't use 'opts' because module has non standard name 'project_nvim'
     config = function()
@@ -635,10 +660,11 @@ return {
   {
     "folke/flash.nvim",
     event = "VeryLazy",
+    enabled = true,
     -- @type Flash.Config
     opts = {
       search = {
-        multi_window = false,
+        multi_window = true,
       },
     },
     keys = require "configs.flash",
@@ -930,6 +956,7 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       -- mapped to <space>lt -- this shows a list of diagnostics
+      dofile(vim.g.base46_cache .. "trouble")
       require("trouble").setup {
         height = 12, -- height of the trouble list
         mode = "document_diagnostics",

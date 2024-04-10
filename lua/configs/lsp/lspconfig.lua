@@ -1,9 +1,9 @@
-local configs = require "utils.lsp"
-local on_attach = configs.on_attach
-local capabilities = configs.capabilities
+local utils = require "utils.lsp.lspconfig"
+local on_attach = utils.on_attach()
+local on_init = utils.on_init()
+local capabilities = utils.capabilities()
 
 local lspconfig = require "lspconfig"
--- local servers = { "html", "cssls", "clangd" }
 
 local sign = function(opts)
   vim.fn.sign_define(opts.name, {
@@ -34,7 +34,7 @@ vim.diagnostic.config {
   update_in_insert = true,
   float = {
     border = "rounded",
-    source = "always",
+    -- source = "always",
     header = "",
     prefix = "",
     focusable = false,
@@ -49,13 +49,13 @@ vim.diagnostic.config {
 -- end
 
 lspconfig.vimls.setup {
-  -- on_init = custom_init,
+  on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
 }
 
 lspconfig.lua_ls.setup {
-  -- on_init = custom_init,
+  on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   settings = {
@@ -95,6 +95,8 @@ lspconfig.lua_ls.setup {
             [vim.fn.stdpath "data" .. "/lazy/lazy.nvim/lua/lazy"] = true,
           },
           -- library = vim.api.nvim_get_runtime_file("", true),
+          maxPreload = 100000,
+          preloadFileSize = 10000,
           checkThirdParty = false, -- THIS IS THE IMPORTANT LINE TO ADD
           didChangeWatchedFiles = {
             dynamicRegistration = false,
@@ -109,6 +111,7 @@ lspconfig.lua_ls.setup {
 }
 
 lspconfig.gopls.setup {
+  on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   cmd = { "gopls" },
@@ -157,6 +160,7 @@ lspconfig.gopls.setup {
 }
 
 lspconfig.pylsp.setup {
+  on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   settings = {
@@ -172,6 +176,7 @@ lspconfig.pylsp.setup {
 }
 
 lspconfig.yamlls.setup {
+  on_init = on_init,
   keyOrdering = false,
   schemaStore = {
     url = "https://www.schemastore.org/api/json/catalog.json",
@@ -182,6 +187,7 @@ lspconfig.yamlls.setup {
 }
 
 lspconfig.clangd.setup {
+  on_init = on_init,
   cmd = {
     "clangd",
     "--background-index",
@@ -201,6 +207,7 @@ lspconfig.clangd.setup {
 }
 
 lspconfig.jsonls.setup {
+  on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   settings = {
@@ -212,6 +219,7 @@ lspconfig.jsonls.setup {
 }
 
 lspconfig.bashls.setup {
+  on_init = on_init,
   on_attach = on_attach,
   capabilities = capabilities,
   filetypes = { "sh", "bash" },
