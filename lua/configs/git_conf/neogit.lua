@@ -2,33 +2,25 @@
 -- Git --
 ---------
 vim.opt.fillchars = { diff = " " }
-local map = require("utils.keymaps").set_keymap
 local utils = require "utils.keymaps"
-local maps = require("utils").empty_map_table()
+local maps = utils:empty_map_table()
 
 local neogit = require "neogit"
+
 neogit.setup {
   commit_popup = {
     kind = "auto",
   },
   signs = {
-    section = { "", "" },
-    item = { "", "" },
+    section = { " ", "" },
+    item = { " ", "" },
   },
   integrations = { diffview = true },
   disable_builtin_notifications = true,
   disable_commit_confirmation = true,
 }
 
-map("n", "<leader>gss", function()
-  neogit.open {
-    cwd = vim.fn.expand "%:p:h",
-    kind = "auto",
-  }
-end, "Neogit status")
-
-local group =
-  vim.api.nvim_create_augroup("MyCustomNeogitEvents", { clear = true })
+local group = vim.api.nvim_create_augroup("MyCustomNeogitEvents", { clear = true })
 -- giving me an error
 vim.api.nvim_create_autocmd("User", {
   pattern = "NeogitPushComplete",
@@ -55,9 +47,32 @@ local keys = {
   { "<leader>gl", "<cmd>Neogit log<CR>", desc = "Git log" },
 }
 
+maps.n["<leader>gss"] = {
+  function()
+    return neogit.open {
+      cwd = vim.fn.expand "%:p:h",
+      kind = "auto",
+    }
+  end,
+  desc = "[Split] Neogit Git status",
+}
+
+maps.n["<leader>gL"] = {
+  function()
+    return neogit.open { "log" }
+  end,
+  desc = "Neogit Log",
+}
+maps.n["<leader>gsT"] = {
+  function()
+    return neogit.open()
+  end,
+  desc = "[Tab] Neogit Git status",
+}
+
 maps.n["<leader>gcc"] = {
   function()
-    return "<cmd>Neogit commit<CR>"
+    return neogit.open { "commit" }
   end,
   desc = "Neogit Git commit",
 }
