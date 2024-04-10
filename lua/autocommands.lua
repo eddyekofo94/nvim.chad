@@ -10,6 +10,7 @@ local contains = vim.tbl_contains
 local smart_close_filetypes = {
   "prompt",
   "qf",
+  "checkhealth",
   "nofile",
   "quickfix",
   "git-conflict",
@@ -212,18 +213,6 @@ autocmd("BufReadPre", {
     end
   end,
 })
--- Auto create dir when saving a file, in case some intermediate directory does not exist
--- INFO: used already
--- autocmd({ "BufWritePre" }, {
---   group = augroup "auto_create_dir",
---   callback = function(event)
---     if event.match:match "^%w%w+://" then
---       return
---     end
---     local file = vim.loop.fs_realpath(event.match) or event.match
---     vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
---   end,
--- })
 
 autocmd("QuickFixCmdPost", {
   desc = "Open quickfix window if there are results.",
@@ -265,14 +254,14 @@ autocmd("CursorMoved", {
   end,
 })
 
--- Highlight on yank
 autocmd("TextYankPost", {
   pattern = "*",
+  desc = "Highlight on yank",
   callback = function()
     vim.highlight.on_yank {
       higroup = "HighlightedyankRegion",
       clear = true,
-      timeout = 500,
+      timeout = 400,
     }
   end,
 })
@@ -309,19 +298,48 @@ end
 -- Close certain filetypes by pressing q.
 autocmd("FileType", {
   pattern = { "*" },
-  callback = function()
+  callback = function(event)
     local is_unmapped = vim.fn.hasmapto("q", "n") == 0
     local is_eligible = is_unmapped
       or vim.wo.previewwindow
       or contains(smart_close_buftypes, vim.bo.buftype)
       or contains(smart_close_filetypes, vim.bo.filetype)
     if is_eligible then
+      vim.bo[event.buf].buflisted = false
       keymap("n", "q", smart_close, {
         desc = "Close window",
         buffer = 0,
         nowait = true,
       })
     end
+  end,
+})
+
+autocmd("FileType", {
+  group = augroup "man_unlisted",
+  pattern = { "man" },
+  desc = "make it easier to close man-files when opened inline",
+  callback = function(event)
+    vim.bo[event.buf].buflisted = false
+  end,
+})
+
+autocmd("FileType", {
+  group = augroup "wrap_spell",
+  pattern = { "gitcommit", "markdown" },
+  desc = "wrap and check for spell in text filetypes",
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.spell = true
+  end,
+})
+
+autocmd({ "FileType" }, {
+  group = augroup "json_conceal",
+  pattern = { "json", "jsonc", "json5" },
+  desc = "Fix conceallevel for json files",
+  callback = function()
+    vim.opt_local.conceallevel = 0
   end,
 })
 
@@ -369,9 +387,26 @@ autocmd({ "BufWritePre" }, {
   end,
 })
 
--- autocmd({ "WinClosed" }, {
---   callback = function()
---     print "FocusEnabled!! "
---     vim.cmd "FocusEnable"
---   end,
--- })
+augroup_autocmd("PromptBufKeymaps", {
+  "BufEnter",
+  {
+    desc = "Undo automatic <C-w> remap in prompt buffers.",
+    callback = function(info)
+      if vim.bo[info.buf].buftype == "prompt" then
+        vim.keymap.set("i", "<C-w>", "<C-S-W>", { buffer = info.buf })
+      end
+    end,
+  },
+})
+
+augroup_autocmd("QuickFixAutoOpen", {
+  "QuickFixCmdPost",
+  {
+    desc = "Open quickfix window if there are results.",
+    callback = function(info)
+      if #vim.fn.getqflist() > 1 then
+        vim.schedule(vim.cmd[info.match:find "^l" and "lwindow" or "cwindow"])
+      end
+    end,
+  },
+})

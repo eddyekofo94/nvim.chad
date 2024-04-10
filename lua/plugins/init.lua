@@ -400,10 +400,13 @@ return {
     opts = {
       ensure_installed = {
         "lua-language-server",
+        "shellcheck",
+        "shfmt",
+        "flake8",
         "prettier",
         "vim-language-server",
         "stylua",
-        "jsonls",
+        "json-lsp",
         "marksman",
         "yamlls",
         "pylsp",

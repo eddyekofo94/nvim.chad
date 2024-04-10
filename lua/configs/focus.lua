@@ -1,5 +1,5 @@
 local M = {}
-local maps = require("utils").empty_map_table()
+local maps = require("utils").keymaps:empty_map_table()
 local keymap_utils = require "utils.keymaps"
 
 local ignore_filetypes = {
@@ -24,6 +24,7 @@ local ignore_filetypes = {
   "notify",
   "Trouble",
   "diffview",
+  "diffview*",
   "oil",
   "telescope",
   "toggleterm",
@@ -32,6 +33,8 @@ local ignore_filetypes = {
   "TelescopePrompt",
   "TelescopeResults",
   "TelescopePreview",
+  "DiffviewFilePanel",
+  "Diffview*",
 }
 
 local opts = {
@@ -169,4 +172,3 @@ vim.api.nvim_create_autocmd("FileType", {
 
 require("focus").setup(opts)
 keymap_utils.set_mappings(maps)
-return M

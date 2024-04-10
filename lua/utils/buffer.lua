@@ -162,7 +162,7 @@ function M.is_float(win)
 end
 
 --- Check if a window is valid
----@param winnr number? The window to check, default to current window
+---@param winnr integeter? The window to check, default to current window
 ---@return boolean # Whether the window is valid or not
 function M.is_win_valid(winnr)
   if not vim.api.nvim_win_is_valid(winnr) then
