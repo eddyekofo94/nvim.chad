@@ -29,7 +29,7 @@ SNIP_ENV = {
 ls.config.set_config { history = true, updateevents = "TextChanged,TextChangedI" }
 
 -- load lua snippets
-lua.load { paths = vim.fn.stdpath "config" .. "/custom/snippets/" }
+lua.load { paths = vim.fn.stdpath "config" .. "/snippets/" }
 
 -- load friendly-snippets
 -- this must be loaded after custom snippets or they get overwritte!

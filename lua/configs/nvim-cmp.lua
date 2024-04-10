@@ -14,8 +14,7 @@ local entry_filter_fuzzy_path, fuzzy_path_option, limit_lsp_types, has_words_bef
 
 dofile(vim.g.base46_cache .. "cmp")
 
-local fuzzy_path_ok, fuzzy_path_comparator =
-  pcall(require, "cmp_fuzzy_path.compare")
+local fuzzy_path_ok, fuzzy_path_comparator = pcall(require, "cmp_fuzzy_path.compare")
 
 if not fuzzy_path_ok then
   fuzzy_path_comparator = function() end
@@ -62,8 +61,7 @@ cmp.setup {
     if vim.api.nvim_get_mode().mode == "c" then
       return true
     else
-      return not context.in_treesitter_capture "comment"
-        and not context.in_syntax_group "Comment"
+      return not context.in_treesitter_capture "comment" and not context.in_syntax_group "Comment"
     end
   end,
   completion = {
@@ -84,6 +82,7 @@ cmp.setup {
   snippet = {
     expand = function(args)
       require("luasnip").lsp_expand(args.body)
+      -- vim.snippet.expand(args.body)
     end,
   },
   matching = {
@@ -260,15 +259,14 @@ cmp.setup {
       },
       entry_filter = function()
         local context = require "cmp.config.context"
-        return not context.in_treesitter_capture "string"
-          and not context.in_syntax_group "String"
+        return not context.in_treesitter_capture "string" and not context.in_syntax_group "String"
       end,
     },
     { name = "nvim_lsp_signature_help" },
     { name = "nvim_lua" },
     {
       name = "treesitter",
-      priority_weight = 80,
+      keyword_length = 4,
       max_item_count = 5,
     },
     { name = "neorg" },
@@ -320,17 +318,6 @@ cmp.setup {
     priority_weight = 2,
     comparators = {
       compare.recently_used,
-      compare.locality,
-      function(entry1, entry2) -- sort by length ignoring "=~"
-        local len1 =
-          string.len(string.gsub(entry1.completion_item.label, "[=~()]", ""))
-        local len2 =
-          string.len(string.gsub(entry2.completion_item.label, "[=~()]", ""))
-        if len1 ~= len2 then
-          return len1 - len2 < 0
-        end
-      end,
-      compare.scopes,
       compare.exact,
       function(entry1, entry2) -- sort by compare kind (Variable, Function etc)
         local kind1 = modified_kind(entry1:get_kind())
@@ -339,6 +326,15 @@ cmp.setup {
           return kind1 - kind2 < 0
         end
       end,
+      compare.locality,
+      function(entry1, entry2) -- sort by length ignoring "=~"
+        local len1 = string.len(string.gsub(entry1.completion_item.label, "[=~()]", ""))
+        local len2 = string.len(string.gsub(entry2.completion_item.label, "[=~()]", ""))
+        if len1 ~= len2 then
+          return len1 - len2 < 0
+        end
+      end,
+      compare.scopes,
       function(entry1, entry2) -- score by lsp, if available
         local t1 = entry1.completion_item.sortText
         local t2 = entry2.completion_item.sortText
@@ -361,10 +357,7 @@ cmp.setup {
   formatting = {
     fields = { "kind", "abbr", "menu" },
     format = function(entry, vim_item)
-      local kind = lspkind.cmp_format { mode = "symbol_text", maxwidth = 50 }(
-        entry,
-        vim_item
-      )
+      local kind = lspkind.cmp_format { mode = "symbol_text", maxwidth = 50 }(entry, vim_item)
 
       local strings = vim.split(kind.kind, "%s", { trimempty = true })
 
@@ -396,7 +389,7 @@ cmp.setup.filetype({ "oil" }, {
       name = "rg",
       priority_weight = 60,
       max_item_count = 10,
-      keyword_length = 4,
+      keyword_length = 5,
       option = {
         additional_arguments = "--smart-case",
       },
