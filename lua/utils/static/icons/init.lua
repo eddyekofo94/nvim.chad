@@ -22,6 +22,6 @@ function meta:flatten()
 end
 
 return setmetatable(
-  vim.g.modern_ui and require "utils.static.icons._icons" or require "utils.static.icons._icons_ascii",
+  vim.g.retro_sym and require "utils.static.icons._icons_retro" or require "utils.static.icons._icons",
   meta
 )
