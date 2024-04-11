@@ -3,7 +3,7 @@ local defaultOpts = {
   retirementAgeMins = 10,
 
   -- Filetypes to ignore.
-  ignoredFiletypes = { "Neogit", "DiffviewFilePanel" },
+  ignoredFiletypes = {},
 
   -- Ignore files matching this lua pattern; empty string disables this setting.
   ignoreFilenamePattern = "",
@@ -30,7 +30,7 @@ local defaultOpts = {
 
   -- ignore unloaded buffers. Session-management plugin often add buffers
   -- to the buffer list without loading them.
-  ignoreUnloadedBufs = true,
+  ignoreUnloadedBufs = false,
 
   -- Show notification on closing. Works with plugins like nvim-notify.
   notificationOnAutoClose = true,
@@ -38,7 +38,7 @@ local defaultOpts = {
   -- When a file is deleted, for example via an external program, delete the
   -- associated buffer as well.
   -- (This feature is independent from the automatic closing)
-  deleteBufferWhenFileDeleted = false,
+  deleteBufferWhenFileDeleted = true,
 }
 
 return defaultOpts

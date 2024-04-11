@@ -10,6 +10,7 @@ local opt = vim.opt
 -- https://github.com/neovim/neovim/commit/2257ade3dc2daab5ee12d27807c0b3bcf103cd29
 vim.loader.enable()
 
+g.has_ui = #vim.api.nvim_list_uis() > 0
 o.cursorlineopt = "both" -- to enable cursorline!
 opt.iskeyword:append "-"
 vim.opt.errorbells = false
@@ -77,6 +78,8 @@ vim.opt.pumheight = 10 -- Makes popup menu smaller
 vim.opt.signcolumn = "yes:1"
 vim.opt.inccommand = "split"
 vim.opt.splitkeep = "screen" -- topline
+opt.splitright = true
+opt.splitbelow = true
 vim.o.history = 10000 -- Number of command-lines that are remembered
 
 -- Buffer
@@ -104,6 +107,9 @@ vim.opt.wrapscan = true
 vim.opt.smoothscroll = true
 vim.opt.statuscolumn = [[%!v:lua.require'ui.statuscolumn'.statuscolumn()]]
 
+-- Recognize numbered lists when formatting text
+opt.formatoptions:append "n"
+
 -- Folding
 vim.opt.foldlevel = 99
 -- vim.opt.foldtext = [[v:lua.require'ui.folds'.foldtext()]]
@@ -126,6 +132,7 @@ vim.opt.backspace = "indent,eol,start"
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
 vim.opt.smartcase = true
+vim.opt.ignorecase = true
 
 -- enable auto indentation
 vim.opt.autoindent = true
@@ -159,10 +166,16 @@ opt.gcr = {
 
 -- Use histogram algorithm for diffing, generates more readable diffs in
 -- situations where two lines are swapped
-opt.diffopt:append "algorithm:histogram"
+opt.diffopt:append {
+  "algorithm:histogram",
+  "indent-heuristic",
+}
 
 -- Use system clipboard
 opt.clipboard:append "unnamedplus"
+
+-- Align columns in quickfix window
+opt.quickfixtextfunc = [[v:lua.require'utils.misc'.qftf]]
 
 opt.backup = false
 opt.backupdir:remove "."
