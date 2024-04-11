@@ -1,6 +1,8 @@
 _G.statusline = {}
 
 local fs = require "utils.fs"
+local utils = require "utils"
+
 local options = {
   diagnostics = {
     " 0 ",
@@ -180,11 +182,35 @@ function statusline.cwd()
   name = (name:match "([^/\\]+)[/\\]*$" or name) .. " "
 
   return (vim.o.columns > 85 and ("%#st_mode#" .. icon .. name)) or ""
-  -- local dir_name = "%#St_Mode# 󰉖 "
-  -- .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-  -- .. fs.shorten_path(fs.get_root(), "/", 0)
-  -- .. " "
-  -- return (vim.o.columns > 85 and dir_name) or ""
+end
+
+---Get diff stats for current buffer
+---@return string
+function statusline.gitdiff()
+  -- Integration with gitsigns.nvim
+  ---@diagnostic disable-next-line: undefined-field
+  local diff = vim.b.gitsigns_status_dict or utils.git.diffstat()
+  local added = diff.added or 0
+  local changed = diff.changed or 0
+  local removed = diff.removed or 0
+  if added == 0 and removed == 0 and changed == 0 then
+    return statusline.branch()
+  end
+  return string.format(
+    "%s (+%s ~%s -%s)",
+    statusline.branch(),
+    utils.stl.hl(tostring(added), "StatusLineGitAdded"),
+    utils.stl.hl(tostring(changed), "StatusLineGitChanged"),
+    utils.stl.hl(tostring(removed), "StatusLineGitRemoved")
+  )
+end
+
+---Get string representation of current git branch
+---@return string
+function statusline.branch()
+  ---@diagnostic disable-next-line: undefined-field
+  local branch = vim.b.gitsigns_status_dict and vim.b.gitsigns_status_dict.head or utils.git.branch()
+  return branch == "" and "" or " " .. branch
 end
 
 return statusline

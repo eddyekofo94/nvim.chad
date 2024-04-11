@@ -40,6 +40,9 @@ M.ui = {
         return statusline.lsp_progress()
         -- return statusline.lsp_msg()
       end,
+      git = function()
+        return statusline.gitdiff()
+      end,
       diagnostics = function()
         return statusline.LSP_Diagnostics()
       end,
