@@ -16,12 +16,10 @@ local options = {
   signs = {
     add = { text = vim.trim(icons.GitSignAdd), numhl = "GitSignsAddNr" },
     untracked = { text = vim.trim(icons.GitSignUntracked) },
-    change = { text = vim.trim(icons.GitSignChange) },
-    delete = { text = vim.trim(icons.GitSignDelete) },
+    change = { text = vim.trim(icons.GitSignChange), numhl = "GitSignsChangeNr" },
+    delete = { text = vim.trim(icons.GitSignDelete), numhl = "GitSignsDeleteNr" },
     topdelete = { text = vim.trim(icons.GitSignTopdelete), numhl = "GitSignDelete" },
     changedelete = { text = vim.trim(icons.GitSignChangedelete), numhl = "GitSignsChangeNr" },
-    -- change = { hl = "GitSignsChange", text = "│", numhl = "GitSignsChangeNr" },
-    -- delete = { hl = "GitSignsDelete", text = "▁", numhl = "GitSignsDeleteNr" },
   },
 
   on_attach = function(bufnr)
