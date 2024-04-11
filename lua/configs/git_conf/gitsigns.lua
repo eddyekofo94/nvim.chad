@@ -14,21 +14,14 @@ local options = {
   },
   worktree = vim.g.git_worktree,
   signs = {
-    add = { text = vim.trim(icons.GitSignAdd) },
+    add = { text = vim.trim(icons.GitSignAdd), numhl = "GitSignsAddNr" },
     untracked = { text = vim.trim(icons.GitSignUntracked) },
     change = { text = vim.trim(icons.GitSignChange) },
     delete = { text = vim.trim(icons.GitSignDelete) },
-    topdelete = { text = vim.trim(icons.GitSignTopdelete) },
+    topdelete = { text = vim.trim(icons.GitSignTopdelete), numhl = "GitSignDelete" },
     changedelete = { text = vim.trim(icons.GitSignChangedelete), numhl = "GitSignsChangeNr" },
-    -- add = { hl = "GitSignsAdd", text = "│", numhl = "GitSignsAddNr" },
     -- change = { hl = "GitSignsChange", text = "│", numhl = "GitSignsChangeNr" },
     -- delete = { hl = "GitSignsDelete", text = "▁", numhl = "GitSignsDeleteNr" },
-    -- topdelete = {
-    --   hl = "GitSignsDelete",
-    --   text = "▔",
-    --   numhl = "GitSignsDeleteNr",
-    -- }, --  " "
-    -- untracked = { text = "│" },
   },
 
   on_attach = function(bufnr)
@@ -76,7 +69,7 @@ local options = {
     map("n", "<leader>gG", gs.stage_buffer, opts "Stage Buffer")
     map("n", "<leader>gu", gs.undo_stage_hunk, opts "Undo Stage Hunk")
     map("n", "<leader>gX", gs.reset_buffer, opts "Reset Buffer")
-    map("n", "<leader>gB", gs.toggle_current_line_blame, "toggle blame line")
+    map("n", "<leader>gL", gs.toggle_current_line_blame, "toggle blame line")
     map("n", "<leader>gv", gs.preview_hunk, "Preview Hunk")
     map("n", "<leader>gb", function()
       gs.blame_line { full = true }
