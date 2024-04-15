@@ -481,8 +481,3 @@ cmp.setup.filetype({ "dap-repl", "dapui_watches", "dapui_hover" }, {
     { name = "dap" },
   },
 })
-
--- Autopairs
--- local cmp_autopairs = require "nvim-autopairs.completion.cmp"
--- require("nvim-autopairs").setup { check_ts = true }
--- cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done {})

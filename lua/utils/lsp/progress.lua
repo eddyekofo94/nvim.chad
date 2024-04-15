@@ -2,6 +2,7 @@ local utils = require "utils.general"
 local buffer = require "utils.buffer"
 local augroup = utils.create_augroup
 local groupid = vim.api.nvim_create_augroup("StatusLine", {})
+local last_message = ""
 
 local M = {}
 -- local spinner_icons =
@@ -33,25 +34,62 @@ local spinner_timer = vim.uv.new_timer()
 ---@type table<integer, { name: string, timestamp: integer, progress: vim.Ringbuf, type: 'begin'|'report'|'end' }>
 local server_info_in_progress = {}
 
-local message = {}
+-- local messages = {} --- @type string[]
+
+local function log(msg)
+  local client = msg.client or ""
+  local title = msg.title or ""
+  local message = msg.message or ""
+  local percentage = msg.percentage or 0
+
+  local out = ""
+
+  if client ~= "" then
+    out = string.format("%s%s%s%s", out, "[", client, "]")
+  end
+
+  if percentage > 0 then
+    out = string.format("%s%s%d%%%%%s", out, "[", percentage, "]")
+  end
+
+  if title ~= "" then
+    out = string.format("%s %s", out, title)
+  end
+
+  if message ~= "" then
+    if title ~= "" and vim.startswith(message, title) then
+      message = string.sub(message, string.len(title) + 1)
+    end
+
+    message = message:gsub("%s*%d+%%", "")
+    message = message:gsub("^%s*-", "")
+    message = vim.trim(message)
+    if message ~= "" then
+      if title ~= "" then
+        out = out .. " - " .. message
+      else
+        out = out .. " " .. message
+      end
+    end
+  end
+
+  last_message = out
+end
 
 vim.api.nvim_create_autocmd("LspProgress", {
   desc = "Update LSP progress info for the status line.",
   group = groupid,
   callback = function(info)
     if spinner_timer then
-      spinner_timer:start(
-        spinner_progress_keep,
-        spinner_progress_keep,
-        vim.schedule_wrap(vim.cmd.redrawstatus)
-      )
+      spinner_timer:start(spinner_progress_keep, spinner_progress_keep, vim.schedule_wrap(vim.cmd.redrawstatus))
     end
 
     local id = info.data.client_id
+    local client = vim.lsp.get_client_by_id(id)
     local now = vim.uv.now()
     server_info_in_progress[id] = {
-      name = vim.lsp.get_client_by_id(id).name,
-      progress = message,
+      name = client.name,
+      progress = client.progress,
       timestamp = now,
       type = info.data.result.value.kind,
     } -- Update LSP progress data
@@ -89,28 +127,24 @@ function M.lsp_progress()
   local now = vim.uv.now()
   ---@return boolean
   local function allow_changing_state()
-    return not vim.b.spinner_state_changed
-      or now - vim.b.spinner_state_changed > spinner_status_keep
+    return not vim.b.spinner_state_changed or now - vim.b.spinner_state_changed > spinner_status_keep
   end
 
   local client = vim.lsp.get_client_by_id(server_ids[1])
-  local progress = client.progress
+  -- local progress = client.progress
 
-  if server_info_in_progress[server_ids[1]].type == "report" then
-    message = progress
-  end
+  -- if server_info_in_progress[server_ids[1]].type == "report" then
+  --   message = vim.lsp.status()
+  -- end
 
-  if
-    #server_ids == 1 and server_info_in_progress[server_ids[1]].type == "end"
-  then
+  if #server_ids == 1 and server_info_in_progress[server_ids[1]].type == "end" then
     if vim.b.spinner_icon ~= spinner_icon_done and allow_changing_state() then
       vim.b.spinner_state_changed = now
       vim.b.spinner_icon = spinner_icon_done .. " " -- INFO: keep the space there
     end
   else
     local ms = vim.loop.hrtime() / 1000000
-    local spinner_icon_progress =
-      spinner_icons[math.floor(ms / 120) % #spinner_icons + 1]
+    local spinner_icon_progress = spinner_icons[math.floor(ms / 120) % #spinner_icons + 1]
 
     if vim.b.spinner_icon ~= spinner_icon_done then
       vim.b.spinner_icon = spinner_icon_progress
@@ -121,16 +155,46 @@ function M.lsp_progress()
   end
 
   return string.format(
-    "%s %s",
+    "%s %s %s",
     vim.b.spinner_icon,
+    -- vim.lsp.status(),
     table.concat(
       vim.tbl_map(function(id)
         return server_info_in_progress[id].name
-        -- .. server_info_in_progress[id].progress
       end, server_ids),
       ", "
     )
   )
+end
+
+--- Consumes the latest progress messages from all clients and formats them as a string.
+--- Empty if there are no clients or if no new messages
+---
+---@return string
+function M.lsp_status()
+  local percentage = nil
+  local messages = {} --- @type string[]
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    --- @diagnostic disable-next-line:no-unknown
+    for progress in client.progress do
+      --- @cast progress {token: lsp.ProgressToken, value: lsp.LSPAny}
+      local value = progress.value
+      if type(value) == "table" and value.kind then
+        local message = value.message and (value.title .. ": " .. value.message) or value.title
+        messages[#messages + 1] = message
+        if value.percentage then
+          percentage = math.max(percentage or 0, value.percentage)
+        end
+      end
+      -- else: Doesn't look like work done progress and can be in any format
+      -- Just ignore it as there is no sensible way to display it
+    end
+  end
+  local message = table.concat(messages, ", ")
+  if percentage then
+    return string.format("%3d%%: %s", percentage, message)
+  end
+  return message
 end
 
 return M

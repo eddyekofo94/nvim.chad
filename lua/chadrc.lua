@@ -25,6 +25,7 @@ M.ui = {
       "lsp_msg",
       "%=",
       "lsp",
+      "treesitter",
       "cursor",
       "line_percentage",
       "cwd",
@@ -48,6 +49,9 @@ M.ui = {
       end,
       macro = function()
         return statusline.macro()
+      end,
+      treesitter = function()
+        return statusline.treesitter_status()
       end,
       line_percentage = function()
         return statusline.line_percentage()

@@ -220,7 +220,7 @@ maps.n["<leader>sP"] = {
 }
 
 maps.n["<leader>ss"] = {
-  Telescope.find "live_grep",
+  Telescope.find("live_grep", { cwd = utils.fs:get_root() }),
   desc = "[Root] Live grep",
 }
 
@@ -296,9 +296,15 @@ maps.x["<leader>s*"] = {
   Telescope.find "grep_string",
   desc = "Grep String [Root]",
 }
+
 maps.x["<leader>*"] = {
   Telescope.find("grep_string", { cwd = false }),
   desc = "Grep String",
+}
+
+maps.n["<leader>sd"] = {
+  Telescope.find("diagnostics", { bufnr = 0 }),
+  desc = "Find diagnostics",
 }
 
 maps.n["<leader>lO"] = {

@@ -61,12 +61,13 @@ return {
           require("glance").setup {}
         end,
       },
-      {
-        "folke/neodev.nvim",
-        lazy = false,
-        ft = "lua",
-      },
     },
+  },
+  {
+    "folke/neodev.nvim",
+    lazy = true,
+    config = true,
+    ft = "lua",
   },
   {
     "dgagn/diagflow.nvim",
@@ -379,9 +380,21 @@ return {
     end,
   },
   {
+    "ahmedkhalf/project.nvim",
+    lazy = false,
+    config = function()
+      require("project_nvim").setup {
+        scope_chdir = "global",
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+    end,
+  },
+  {
     "notjedi/nvim-rooter.lua",
     lazy = false,
-    enabled = true,
+    enabled = false,
     config = function()
       require("nvim-rooter").setup {
         fallback_to_parent = true,

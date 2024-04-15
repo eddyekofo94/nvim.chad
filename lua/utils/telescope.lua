@@ -1,7 +1,6 @@
 local M = {}
 
 local utils_fs = require "utils.fs"
-local get_root = utils_fs.get_root
 local TelescopePickers = require "utils.telescope_pickers"
 
 -- We cache the results of "git rev-parse"
@@ -45,7 +44,8 @@ function M.find(builtin, opts)
   return function()
     builtin = params.builtin
     opts = params.opts
-    opts = vim.tbl_deep_extend("force", { cwd = get_root() }, opts or {})
+    opts = vim.tbl_deep_extend("force", { cwd = utils_fs:get_root() }, opts or {})
+
     if builtin == "files" then
       return M.project_files(opts)
     end

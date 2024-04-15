@@ -49,10 +49,10 @@ function M.get_root()
   ---@type string?
   local root = roots[1]
   if not root then
-    path = path and vim.fs.dirname(path) or vim.loop.cwd()
+    path = path and vim.fs.dirname(path) or vim.uv.cwd()
     ---@type string?
     root = vim.fs.find(M.root_patterns, { path = path, upward = true })[1]
-    root = root and vim.fs.dirname(root) or vim.loop.cwd()
+    root = root and vim.fs.dirname(root) or vim.uv.cwd()
   end
   ---@cast root string
   return root
@@ -270,7 +270,7 @@ end
 -- @usage local heirline_component = { provider = require("astronvim.utils.status").provider.unique_path() }
 -- @see astronvim.utils.status.utils.stylize
 function M.unique_path(opts)
-  opts = M.extend_tbl({
+  opts = utils.extend_tbl({
     buf_name = function(bufnr)
       return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
     end,

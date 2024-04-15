@@ -162,15 +162,10 @@ function M.is_float(win)
 end
 
 --- Check if a window is valid
----@param winnr integeter? The window to check, default to current window
----@return boolean # Whether the window is valid or not
+---@param winnr integer The window to check, default to current window
+---@return boolean Whether the window is valid or not
 function M.is_win_valid(winnr)
   if not vim.api.nvim_win_is_valid(winnr) then
-    return false
-  end
-
-  if #M.visible_buffers() == 1 then
-    utils.notify_once("Last window", vim.log.levels.INFO)
     return false
   end
 
@@ -181,9 +176,9 @@ function M.is_win_valid(winnr)
 
   local bufnr = vim.api.nvim_win_get_buf(winnr)
 
-  local win_is_valid = M.is_buf_valid(bufnr)
+  local buf_is_valid = M.is_buf_valid(bufnr)
 
-  return win_is_valid
+  return buf_is_valid
 end
 
 --- Check if a buffer can be restored
@@ -389,6 +384,11 @@ function M.close_window(winid, force)
 
   if not winid then
     winid = current
+  end
+
+  if #M.visible_buffers() == 1 then
+    utils.notify_once("Last window", vim.log.levels.INFO)
+    return false
   end
 
   if M.is_win_valid(winid) then

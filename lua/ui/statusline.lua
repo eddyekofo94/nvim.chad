@@ -2,7 +2,42 @@ _G.statusline = {}
 
 local fs = require "utils.fs"
 local utils = require "utils"
+local contains = vim.tbl_contains
 
+local ts_buffer = {
+  "prompt",
+  "qf",
+  "checkhealth",
+  "nofile",
+  "quickfix",
+  "git-conflict",
+  "term",
+  "lazygit",
+  "oil",
+  "dap-repl",
+  "dapui_scopes",
+  "dapui_stacks",
+  "dapui_breakpoints",
+  "dapui_console",
+  "dapui_watches",
+  "dapui_repl",
+  "undotree",
+  "noice",
+  "man",
+  "messages",
+  "undotree",
+  "help",
+  "NeogitStatus",
+  "notify",
+  "Trouble",
+  "diffview",
+  "telescope",
+  "lazy",
+  "Outline",
+  "TelescopePrompt",
+  "TelescopeResults",
+  "TelescopePreview",
+}
 local options = {
   diagnostics = {
     " 0 ",
@@ -33,17 +68,17 @@ local assets = {
   file = "󰈙 ",
 }
 
-local get_file_icon = function()
-  local filename = vim.fn.expand "%:t"
-  local extension = vim.fn.expand "%:e"
-  local present, icons = pcall(require, "nvim-web-devicons")
-  local icon = present and icons.get_icon(filename, extension) or assets.file
-  return " " .. icon .. " "
-end
+-- local get_file_icon = function()
+--   local filename = vim.fn.expand "%:t"
+--   local extension = vim.fn.expand "%:e"
+--   local present, icons = pcall(require, "nvim-web-devicons")
+--   local icon = present and icons.get_icon(filename, extension) or assets.file
+--   return " " .. icon .. " "
+-- end
 
 function statusline.lsp_progress()
   local progress = require("configs.lsp.lsp-progress").message()
-  -- local progress = require("/ utils.lsp.progress").lsp_progress()
+  -- local progress = require("utils.lsp.progress").lsp_progress()
 
   return string.format(
     "%s %s ",
@@ -211,6 +246,19 @@ function statusline.branch()
   ---@diagnostic disable-next-line: undefined-field
   local branch = vim.b.gitsigns_status_dict and vim.b.gitsigns_status_dict.head or utils.git.branch()
   return branch == "" and "" or " " .. branch
+end
+
+--- A provider function for showing if treesitter is connected
+---@return string # function for outputting TS if treesitter is connected
+-- @see astronvim.utils.status.utils.stylize
+function statusline.treesitter_status()
+  local utils_buffer = require "utils.buffer"
+  local current = vim.api.nvim_get_current_win()
+
+  if vim.bo.filetype == "" or contains(ts_buffer, vim.bo.filetype) then
+    return ""
+  end
+  return utils_buffer.is_win_valid(current) and vim.treesitter.get_parser() and "TS" or ""
 end
 
 return statusline

@@ -1,7 +1,7 @@
 -- EXAMPLE
 local on_init = require("utils.lsp.lspconfig").on_init
--- local capabilities = require("utils.lsp.lspconfig").capabilities
-local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require("utils.lsp.lspconfig").capabilities
+capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 local conf = require("nvconfig").ui.lsp
 local utils_keymaps = require "utils.keymaps"
@@ -34,11 +34,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 
     map("n", "gD", vim.lsp.buf.declaration, opts "Lsp Go to declaration")
-    map("n", "gd", vim.lsp.buf.definition, opts "Lsp Go to definition")
     map("n", "K", vim.lsp.buf.hover, opts "Lsp hover information")
-    map("n", "gi", vim.lsp.buf.implementation, opts "Lsp Go to implementation")
-    map("n", "<leader>sh", vim.lsp.buf.signature_help, opts "Lsp Show signature help")
-    map("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts "Lsp Add workspace folder")
+    --  INFO: 2024-04-11 15:55 PM - Using Glance
+    -- map("n", "gd", vim.lsp.buf.definition, opts "Lsp Go to definition")
+    -- map("n", "gi", vim.lsp.buf.implementation, opts "Lsp Go to implementation")
+    map("n", "<leader>lh", vim.lsp.buf.signature_help, opts "Lsp Show signature help")
+    map("n", "<leader>la", vim.lsp.buf.add_workspace_folder, opts "Lsp Add workspace folder")
     map("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts "Lsp Remove workspace folder")
 
     map("n", "<leader>wl", function()
@@ -47,7 +48,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     -- map("n", "<leader>D", vim.lsp.buf.type_definition, opts "Lsp Go to type definition")
 
-    map("n", "<leader>lr", function()
+    map({ "n", "x" }, "<leader>lr", function()
       require "nvchad.lsp.renamer"()
     end, opts "Lsp NvRenamer")
 
@@ -63,6 +64,28 @@ vim.api.nvim_create_autocmd("LspAttach", {
     -- setup signature popup
     if conf.signature and client.server_capabilities.signatureHelpProvider then
       require("nvchad.lsp.signature").setup(client, bufnr)
+    end
+
+    ----Inlay hints
+    --  BUG: 2024-04-11 16:06 PM - Not working
+    if vim.fn.has "nvim-0.10" == 1 then
+      vim.g.inlay_hints_visible = false
+
+      local function toggle_inlay_hints()
+        if vim.g.inlay_hints_visible then
+          vim.g.inlay_hints_visible = false
+          vim.lsp.inlay_hint.enable(bufnr, false)
+        else
+          if client.server_capabilities.inlayHintProvider then
+            vim.g.inlay_hints_visible = true
+            vim.lsp.inlay_hint.enable(bufnr, true)
+          else
+            print "no inlay hints available"
+          end
+        end
+      end
+
+      map("n", "<leader>lk", toggle_inlay_hints, "vim.lsp.inlay_hint")
     end
   end,
 })
