@@ -67,6 +67,24 @@ autocmd("BufWritePre", {
   end,
 })
 
+augroup_autocmd("LastPosJmp", {
+  "BufReadPost",
+  {
+    desc = "Last position jump.",
+    callback = function(info)
+      local ft = vim.bo[info.buf].ft
+      -- don't apply to git messages
+      if ft ~= "gitcommit" and ft ~= "gitrebase" then
+        vim.cmd.normal {
+          'g`"zvzz',
+          bang = true,
+          mods = { emsg_silent = true },
+        }
+      end
+    end,
+  },
+})
+
 -- use bash-treesitter-parser for zsh
 local ft_as_bash = augroup "ftAsBash"
 autocmd("BufRead", {
@@ -170,19 +188,19 @@ local function lcd(dir)
 end
 
 local groupid = vim.api.nvim_create_augroup("SyncCwd", {})
-vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "BufWinEnter" }, {
+autocmd({ "BufEnter", "WinEnter", "BufWinEnter" }, {
   desc = "Set cwd to follow buffers' directory.",
   group = groupid,
   pattern = "*",
   callback = function(info)
-    local current = vim.api.nvim_get_current_win()
-    local is_win_valid = utils_buffer.is_win_valid(current)
     vim.schedule(function()
+      local current = vim.api.nvim_get_current_win()
+      local is_win_valid = utils_buffer.is_win_valid(current)
       if is_win_valid then
-        -- local cwd = vim.fs.normalize(vim.fn.getcwd(vim.fn.winnr()))
+        local target_cwd = vim.fs.normalize(vim.fn.getcwd(vim.fn.winnr()))
         local cwd = fs.get_root()
 
-        if cwd ~= vim.fn.getcwd() then
+        if cwd ~= target_cwd then
           print("cd to " .. cwd)
           lcd(cwd)
         end
@@ -191,31 +209,40 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "BufWinEnter" }, {
   end,
 })
 
-autocmd({ "BufWinEnter", "FileChangedShellPost" }, {
-  pattern = "*",
-  desc = "Automatically change local current directory.",
-  callback = function(info)
-    vim.schedule(function()
-      if
-        info.file == ""
-        or not vim.api.nvim_buf_is_valid(info.buf)
-        or vim.bo[info.buf].bt ~= ""
-        or (vim.uv.fs_stat(info.file) or {}).type ~= "file"
-      then
-        return
-      end
-      local current_dir = vim.fn.getcwd(0)
-      local target_dir = require("utils.fs").proj_dir(info.file) or vim.fs.dirname(info.file)
-      local stat = target_dir and vim.uv.fs_stat(target_dir)
-      -- Prevent unnecessary directory change, which triggers
-      -- DirChanged autocmds that may update winbar unexpectedly
-      if current_dir ~= target_dir and stat and stat.type == "directory" then
-        print("CWD: " .. target_dir)
-        vim.cmd.lcd(target_dir)
-      end
-    end)
-  end,
-})
+-- augroup_autocmd("AutoCwd", {
+--   { "BufWinEnter" },
+--   {
+--     pattern = "*",
+--     desc = "Automatically change local current directory.",
+--     callback = function(info)
+--       if info.file == "" or vim.bo[info.buf].bt ~= "" then
+--         return
+--       end
+--       local buf = info.buf
+--       local win = vim.api.nvim_get_current_win()
+--
+--       vim.schedule(function()
+--         if
+--           not vim.api.nvim_buf_is_valid(buf)
+--           or not vim.api.nvim_win_is_valid(win)
+--           or not vim.api.nvim_win_get_buf(win) == buf
+--         then
+--           return
+--         end
+--         vim.api.nvim_win_call(win, function()
+--           local current_dir = vim.fn.getcwd(0)
+--           local target_dir = require("utils").fs.proj_dir(info.file) or vim.fs.dirname(info.file)
+--           local stat = target_dir and vim.uv.fs_stat(target_dir)
+--           -- Prevent unnecessary directory change, which triggers
+--           -- DirChanged autocmds that may update winbar unexpectedly
+--           if stat and stat.type == "directory" and current_dir ~= target_dir then
+--             pcall(vim.cmd.lcd, target_dir)
+--           end
+--         end)
+--       end)
+--     end,
+--   },
+-- })
 
 autocmd("BufReadPre", {
   desc = "Set settings for large files.",
