@@ -1,4 +1,5 @@
 local utils = require "utils.general"
+local utils_buffer = require "utils.buffer"
 local keymap = require("utils.keymaps").set_keymap
 local fs = require "utils.fs"
 
@@ -176,16 +177,17 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "BufWinEnter" }, {
   callback = function(info)
     local current = vim.api.nvim_get_current_win()
     local is_win_valid = utils_buffer.is_win_valid(current)
+    vim.schedule(function()
+      if is_win_valid then
+        -- local cwd = vim.fs.normalize(vim.fn.getcwd(vim.fn.winnr()))
+        local cwd = fs.get_root()
 
-    if is_win_valid then
-      -- local cwd = vim.fs.normalize(vim.fn.getcwd(vim.fn.winnr()))
-      local cwd = fs.get_root()
-
-      if cwd ~= vim.fn.getcwd() then
-        vim.notify_once("cd to " .. cwd, vim.log.levels.INFO)
-        lcd(cwd)
+        if cwd ~= vim.fn.getcwd() then
+          print("cd to " .. cwd)
+          lcd(cwd)
+        end
       end
-    end
+    end)
   end,
 })
 
@@ -208,6 +210,7 @@ autocmd({ "BufWinEnter", "FileChangedShellPost" }, {
       -- Prevent unnecessary directory change, which triggers
       -- DirChanged autocmds that may update winbar unexpectedly
       if current_dir ~= target_dir and stat and stat.type == "directory" then
+        print("CWD: " .. target_dir)
         vim.cmd.lcd(target_dir)
       end
     end)
