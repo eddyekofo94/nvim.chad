@@ -158,6 +158,37 @@ augroup_autocmd("BigFileSettings", {
 --   end,
 -- })
 
+---Change window-local directory to `dir`
+---@param dir string
+---@return nil
+local function lcd(dir)
+  local ok = pcall(vim.cmd.lcd, dir)
+  if not ok then
+    vim.notify_once("failed to cd to " .. dir, vim.log.levels.WARN)
+  end
+end
+
+local groupid = vim.api.nvim_create_augroup("SyncCwd", {})
+vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "BufWinEnter" }, {
+  desc = "Set cwd to follow buffers' directory.",
+  group = groupid,
+  pattern = "*",
+  callback = function(info)
+    local current = vim.api.nvim_get_current_win()
+    local is_win_valid = utils_buffer.is_win_valid(current)
+
+    if is_win_valid then
+      -- local cwd = vim.fs.normalize(vim.fn.getcwd(vim.fn.winnr()))
+      local cwd = fs.get_root()
+
+      if cwd ~= vim.fn.getcwd() then
+        vim.notify_once("cd to " .. cwd, vim.log.levels.INFO)
+        lcd(cwd)
+      end
+    end
+  end,
+})
+
 autocmd({ "BufWinEnter", "FileChangedShellPost" }, {
   pattern = "*",
   desc = "Automatically change local current directory.",
